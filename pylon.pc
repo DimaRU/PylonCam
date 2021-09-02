@@ -1,0 +1,10 @@
+prefix=/Library/Frameworks
+exec_prefix=${prefix}
+libdir=${prefix}
+includedir=${prefix}/Pylon.framework/Headers
+
+Name: Pylon
+Description: Pylon Framework
+Version: 6.2.0
+Libs: -F${libdir}
+Cflags: -I${includedir} -I${includedir}/GenICam -F${libdir}
