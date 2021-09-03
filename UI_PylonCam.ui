@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>UIMainWindow</class>
+ <widget class="QMainWindow" name="UIMainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1043</width>
+    <height>787</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>520</width>
+    <height>410</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background: #284465;</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>5</number>
+    </property>
+    <property name="leftMargin">
+     <number>20</number>
+    </property>
+    <property name="topMargin">
+     <number>20</number>
+    </property>
+    <property name="rightMargin">
+     <number>20</number>
+    </property>
+    <property name="bottomMargin">
+     <number>2</number>
+    </property>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QLabel" name="pageHeaderlabel">
+        <property name="maximumSize">
+         <size>
+          <width>230</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">font-family: Rubik;
+font-style: normal;
+font-weight: bold;
+font-size: 32px;
+line-height: 38px;
+color: #FFFFFF;
+</string>
+        </property>
+        <property name="text">
+         <string>Camera focus</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="lapLabel">
+          <property name="minimumSize">
+           <size>
+            <width>194</width>
+            <height>42</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>194</width>
+            <height>42</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">font-family: Rubik;
+font-style: normal;
+font-weight: 500;
+font-size: 16px;
+color: white;
+height: 40px;
+width: 192px;
+max-width: 192px;
+max-height: 40px;
+min-height: 40px;
+min-width: 192px;
+border: 1px solid transparent;</string>
+          </property>
+          <property name="text">
+           <string>Laplacian: 0.0</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="bestLabel">
+          <property name="minimumSize">
+           <size>
+            <width>194</width>
+            <height>42</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>194</width>
+            <height>42</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">font-family: Rubik;
+font-style: normal;
+font-weight: 500;
+font-size: 16px;
+color: white;
+height: 40px;
+width: 192px;
+max-width: 192px;
+max-height: 40px;
+min-height: 40px;
+min-width: 192px;
+border: 1px solid transparent;</string>
+          </property>
+          <property name="text">
+           <string>best: 0</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="imageLabel">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QFrame" name="frameButtons">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>174</width>
+        <height>95</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>100</width>
+        <height>95</height>
+       </size>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QFrame {
+background: transparent;
+}
+QPushButton {
+font-family: Rubik;
+font-style: normal;
+font-weight: 500;
+font-size: 48px;
+opacity: 0.94;
+height: 60px;
+width: 60px;
+max-width: 60px;
+max-height: 60px;
+min-height: 60px;
+min-width: 60px;
+}
+QPushButton:enabled { 
+border: 1px solid #0F9FD6;
+border-radius: 8px;
+color: #0F9FD6;
+background: transparent;
+}
+QPushButton:disabled { 
+border: 1px solid gray;
+border-radius: 8px;
+color: #0F9FD6;
+background: transparent;
+}
+QPushButton:pressed{ 
+border: 1px solid white;
+}
+QPushButton::checked { 
+color: #FFFFFF;
+background: #0F9FD6;
+border-radius: 8px;
+}</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <widget class="QWidget" name="layoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>161</width>
+         <height>72</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QPushButton" name="plusButton">
+          <property name="styleSheet">
+           <string notr="true">QPushButton:enabled { 
+color: #FFFFFF;
+background: #0F9FD6;
+border-radius: 8px;
+}
+</string>
+          </property>
+          <property name="text">
+           <string>+</string>
+          </property>
+          <property name="flat">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="minusButton">
+          <property name="styleSheet">
+           <string notr="true">QPushButton:enabled { 
+color: #FFFFFF;
+background: #0F9FD6;
+border-radius: 8px;
+}
+</string>
+          </property>
+          <property name="text">
+           <string>-</string>
+          </property>
+          <property name="flat">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
