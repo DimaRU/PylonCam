@@ -21,7 +21,9 @@ class UIMainWindow: QMainWindow {
     var imageLabel: QLabel!
     var frameButtons: QFrame!
     var layoutWidget1: QWidget!
-    var horizontalLayout_2: QHBoxLayout!
+    var horizontalLayoutButtons: QHBoxLayout!
+    var startStopButton: QPushButton!
+    var horizontalSpacer_2: QSpacerItem!
     var plusButton: QPushButton!
     var minusButton: QPushButton!
 
@@ -110,7 +112,7 @@ border: 1px solid transparent;
         frameButtons = QFrame(parent: centralwidget)
         frameButtons.name = "frameButtons"
         frameButtons.minimumSize = QSize(width: 174, height: 95)
-        frameButtons.maximumSize = QSize(width: 100, height: 95)
+        frameButtons.maximumSize = QSize(width: 16777215, height: 95)
         frameButtons.autoFillBackground = false
         frameButtons.styleSheet = """
 QFrame {
@@ -120,7 +122,7 @@ QPushButton {
 font-family: Rubik;
 font-style: normal;
 font-weight: 500;
-font-size: 48px;
+font-size: 40px;
 opacity: 0.94;
 height: 60px;
 width: 60px;
@@ -153,10 +155,38 @@ border-radius: 8px;
         frameButtons.frameShape = .NoFrame
         layoutWidget1 = QWidget(parent: frameButtons)
         layoutWidget1.name = "layoutWidget1"
-        layoutWidget1.geometry = QRect(x: 10, y: 10, width: 161, height: 72)
-        horizontalLayout_2 = QHBoxLayout(parent: layoutWidget1)
-        horizontalLayout_2.contentsMargins = QMargins(left: 0, top: 0, right: 0, bottom: 0)
-        horizontalLayout_2.spacing = 0
+        layoutWidget1.geometry = QRect(x: 10, y: 10, width: 1001, height: 72)
+        horizontalLayoutButtons = QHBoxLayout(parent: layoutWidget1)
+        horizontalLayoutButtons.contentsMargins = QMargins(left: -1, top: -1, right: 10, bottom: -1)
+        horizontalLayoutButtons.spacing = 30
+        startStopButton = QPushButton(parent: layoutWidget1)
+        startStopButton.name = "startStopButton"
+        startStopButton.minimumSize = QSize(width: 162, height: 62)
+        startStopButton.maximumSize = QSize(width: 62, height: 62)
+        startStopButton.styleSheet = """
+QPushButton {
+font-family: Rubik;
+font-style: normal;
+font-weight: 500;
+font-size: 40px;
+opacity: 0.94;
+max-width: 160px;
+max-height: 60px;
+min-width: 160px;
+min-height: 60px;
+}
+QPushButton:enabled { 
+color: #FFFFFF;
+background: #0F9FD6;
+border-radius: 8px;
+}
+
+"""
+        startStopButton.text = "Start"
+        startStopButton.isFlat = false
+        horizontalLayoutButtons.add(widget: startStopButton)
+        horizontalSpacer_2 = QSpacerItem(width: 40, height: 20, horizontalPolicy: .Expanding, verticalPolicy: .Minimum)
+        horizontalLayoutButtons.add(item: horizontalSpacer_2)
         plusButton = QPushButton(parent: layoutWidget1)
         plusButton.name = "plusButton"
         plusButton.styleSheet = """
@@ -169,7 +199,7 @@ border-radius: 8px;
 """
         plusButton.text = "+"
         plusButton.isFlat = false
-        horizontalLayout_2.add(widget: plusButton)
+        horizontalLayoutButtons.add(widget: plusButton)
         minusButton = QPushButton(parent: layoutWidget1)
         minusButton.name = "minusButton"
         minusButton.styleSheet = """
@@ -182,7 +212,7 @@ border-radius: 8px;
 """
         minusButton.text = "-"
         minusButton.isFlat = false
-        horizontalLayout_2.add(widget: minusButton)
+        horizontalLayoutButtons.add(widget: minusButton)
         verticalLayout.add(widget: frameButtons)
         self.centralWidget = centralwidget
     }

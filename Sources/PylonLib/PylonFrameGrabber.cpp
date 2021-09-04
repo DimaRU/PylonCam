@@ -1,5 +1,5 @@
 //
-//  FrameGrabber.c
+//  PylonFrameGrabber.c
 //  PylonCam
 //
 //  Created by Dmitriy Borovikov on 30.08.2021.
@@ -20,27 +20,42 @@ void CPylonTerminate(void) {
     PylonTerminate();
 }
 
-
-void CPylonReleaseCamera(void *camera) {
+void CPylonReleaseCamera(const void *camera) {
     delete (CInstantCamera *)camera;
 }
 
-void *CPylonCreateCamera(void) {
+const void * CPylonCreateCamera(void) {
+    auto camera = new CInstantCamera();
+    return camera;
+}
+
+bool CPylonAttachDevice(const void *cameraPtr) {
+    CInstantCamera *camera = (CInstantCamera *)cameraPtr;
     try
     {
         IPylonDevice* device = CTlFactory::GetInstance().CreateFirstDevice();
-        CInstantCamera *camera = new CInstantCamera(device);
-        return camera;
+        camera->Attach(device);
+        return true;
     }
     catch (const GenericException& e)
     {
         cerr << "An exception occurred." << endl
         << e.GetDescription() << endl;
-        return nullptr;
+        return false;
     }
 }
 
-int CPylonIntParameter(void *cameraPtr, const char *name)
+void CPylonExecuteSoftwareTrigger(const void *cameraPtr) {
+    CInstantCamera *camera = (CInstantCamera *)cameraPtr;
+    camera->ExecuteSoftwareTrigger();
+}
+
+void CPylonDestroyDevice(const void *cameraPtr) {
+    CInstantCamera *camera = (CInstantCamera *)cameraPtr;
+    camera->DestroyDevice();
+ }
+
+int CPylonIntParameter(const void *cameraPtr, const char *name)
 {
     CInstantCamera *camera = (CInstantCamera *)cameraPtr;
     INodeMap& nodemap = camera->GetNodeMap();
@@ -50,7 +65,7 @@ int CPylonIntParameter(void *cameraPtr, const char *name)
     return value;
 }
 
-double CPylonFloatParameter(void *cameraPtr, const char *name)
+double CPylonFloatParameter(const void *cameraPtr, const char *name)
 {
     CInstantCamera *camera = (CInstantCamera *)cameraPtr;
     INodeMap& nodemap = camera->GetNodeMap();
@@ -60,7 +75,7 @@ double CPylonFloatParameter(void *cameraPtr, const char *name)
     return value;
 }
 
-const char *CPylonStringParameter(void *cameraPtr, const char *name)
+const char *CPylonStringParameter(const void *cameraPtr, const char *name)
 {
     CInstantCamera *camera = (CInstantCamera *)cameraPtr;
     INodeMap& nodemap = camera->GetNodeMap();
@@ -70,7 +85,7 @@ const char *CPylonStringParameter(void *cameraPtr, const char *name)
     return value;
 }
 
-void CPylonPrintParams(void *cameraPtr) {
+void CPylonPrintParams(const void *cameraPtr) {
     CInstantCamera *camera = (CInstantCamera *)cameraPtr;
     try
     {
@@ -101,12 +116,16 @@ void CPylonPrintParams(void *cameraPtr) {
     }
 }
 
-void CPylonGrabStop(void *cameraPtr) {
+void CPylonGrabStop(const void *cameraPtr) {
     CInstantCamera *camera = (CInstantCamera *)cameraPtr;
     camera->StopGrabbing();
 }
 
-void CPylonGrabFrames(void *cameraPtr, int bufferCount, int timeout, GrabCallbackPtr grabCallbackPtr) {
+void CPylonGrabFrames(const void * _Nonnull cameraPtr,
+                      const void * _Nonnull object,
+                      int bufferCount,
+                      int timeout,
+                      GrabCallback _Nonnull grabCallback) {
     CInstantCamera *camera = (CInstantCamera *)cameraPtr;
     try
     {
@@ -126,9 +145,9 @@ void CPylonGrabFrames(void *cameraPtr, int bufferCount, int timeout, GrabCallbac
 
             int width = ptrGrabResult->GetWidth();
             int height = ptrGrabResult->GetHeight();
-            uint8_t* pImageBuffer = (uint8_t*) ptrGrabResult->GetBuffer();
+            auto pImageBuffer = ptrGrabResult->GetBuffer();
 
-            grabCallbackPtr(width, height, pImageBuffer);
+            grabCallback(object, width, height, pImageBuffer);
         }
     }
     catch (const GenericException& e)
@@ -137,4 +156,3 @@ void CPylonGrabFrames(void *cameraPtr, int bufferCount, int timeout, GrabCallbac
             << e.GetDescription() << endl;
     }
 }
-

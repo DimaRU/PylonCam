@@ -7,5 +7,5 @@
 
 #pragma once
 
-#include "../FrameGrabber.h"
+#include "../PylonFrameGrabber.h"
 #include "../FocusMeasure.h"

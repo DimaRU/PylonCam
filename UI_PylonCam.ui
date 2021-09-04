@@ -186,7 +186,7 @@ border: 1px solid transparent;</string>
       </property>
       <property name="maximumSize">
        <size>
-        <width>100</width>
+        <width>16777215</width>
         <height>95</height>
        </size>
       </property>
@@ -201,7 +201,7 @@ QPushButton {
 font-family: Rubik;
 font-style: normal;
 font-weight: 500;
-font-size: 48px;
+font-size: 40px;
 opacity: 0.94;
 height: 60px;
 width: 60px;
@@ -239,14 +239,71 @@ border-radius: 8px;
         <rect>
          <x>10</x>
          <y>10</y>
-         <width>161</width>
+         <width>1001</width>
          <height>72</height>
         </rect>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <layout class="QHBoxLayout" name="horizontalLayoutButtons">
         <property name="spacing">
-         <number>0</number>
+         <number>30</number>
         </property>
+        <property name="rightMargin">
+         <number>10</number>
+        </property>
+        <item>
+         <widget class="QPushButton" name="startStopButton">
+          <property name="minimumSize">
+           <size>
+            <width>162</width>
+            <height>62</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>62</width>
+            <height>62</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+font-family: Rubik;
+font-style: normal;
+font-weight: 500;
+font-size: 40px;
+opacity: 0.94;
+max-width: 160px;
+max-height: 60px;
+min-width: 160px;
+min-height: 60px;
+}
+QPushButton:enabled { 
+color: #FFFFFF;
+background: #0F9FD6;
+border-radius: 8px;
+}
+</string>
+          </property>
+          <property name="text">
+           <string>Start</string>
+          </property>
+          <property name="flat">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
         <item>
          <widget class="QPushButton" name="plusButton">
           <property name="styleSheet">
