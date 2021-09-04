@@ -152,6 +152,7 @@ void CPylonGrabFrames(const void * _Nonnull cameraPtr,
     }
     catch (const GenericException& e)
     {
+        if (!camera->IsGrabbing()) return;
         cerr << "An exception occurred." << endl
             << e.GetDescription() << endl;
     }

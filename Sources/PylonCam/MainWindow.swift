@@ -49,12 +49,11 @@ class MainWindow: UIMainWindow {
                     let mySelf = Unmanaged<MainWindow>.fromOpaque(object).takeUnretainedValue()
                     mySelf.drawFrame(frame: frame, width: Int(width), height: Int(height))
                 }
+                print("Stopped")
             }
         } else {
             startStopButton.text = "Start"
-            queue.async {
-                self.frameGrabber.GrabStop()
-            }
+            self.frameGrabber.GrabStop()
         }
 
     }
