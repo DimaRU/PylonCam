@@ -18,6 +18,9 @@ class UIMainWindow: QMainWindow {
     var horizontalLayout: QHBoxLayout!
     var lapLabel: QLabel!
     var bestLabel: QLabel!
+    var scrollArea: QScrollArea!
+    var scrollAreaWidgetContents: QWidget!
+    var horizontalLayout_2: QHBoxLayout!
     var imageLabel: QLabel!
     var frameButtons: QFrame!
     var layoutWidget1: QWidget!
@@ -105,10 +108,21 @@ border: 1px solid transparent;
         horizontalLayout.add(widget: bestLabel)
         horizontalLayout_3.add(layout: horizontalLayout)
         verticalLayout.add(layout: horizontalLayout_3)
-        imageLabel = QLabel(parent: centralwidget)
+        scrollArea = QScrollArea(parent: centralwidget)
+        scrollArea.name = "scrollArea"
+        scrollArea.widgetResizable = true
+        scrollAreaWidgetContents = QWidget()
+        scrollAreaWidgetContents.name = "scrollAreaWidgetContents"
+        scrollAreaWidgetContents.geometry = QRect(x: 0, y: 0, width: 1001, height: 612)
+        horizontalLayout_2 = QHBoxLayout(parent: scrollAreaWidgetContents)
+        horizontalLayout_2.contentsMargins = QMargins(left: 0, top: 0, right: 0, bottom: 0)
+        horizontalLayout_2.spacing = 0
+        imageLabel = QLabel(parent: scrollAreaWidgetContents)
         imageLabel.name = "imageLabel"
         imageLabel.text = ""
-        verticalLayout.add(widget: imageLabel)
+        horizontalLayout_2.add(widget: imageLabel)
+        scrollArea.setWidget(scrollAreaWidgetContents)
+        verticalLayout.add(widget: scrollArea)
         frameButtons = QFrame(parent: centralwidget)
         frameButtons.name = "frameButtons"
         frameButtons.minimumSize = QSize(width: 174, height: 95)

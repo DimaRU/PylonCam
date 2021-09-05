@@ -11,8 +11,22 @@ import Logging
 import PylonLib
 
 class MainWindow: UIMainWindow {
+    let zoom: [Float] = [0.5, 1, 2, 3, 4, 5, 8]
+    var zoomLevel = 1 {
+        didSet {
+            if zoomLevel == 0 {
+                plusButton.enabled = false
+            } else if zoomLevel == zoom.count - 1 {
+                minusButton.enabled = false
+            } else {
+                minusButton.enabled = true
+                plusButton.enabled = true
+            }
+        }
+    }
     var frameGrabber: PylonFrameGrabber
-    let queue = DispatchQueue(label: "frameGrabber.Queue", qos: .userInitiated)
+    let frameGrabberQueue = DispatchQueue(label: "frameGrabber.Queue", qos: .userInitiated)
+    let measureQueue = DispatchQueue(label: "measureFocus.Queue", qos: .userInteractive)
 
     init() {
         PylonInitialize()
@@ -34,20 +48,22 @@ class MainWindow: UIMainWindow {
     }
 
     func plusButtonClick() {
+        zoomLevel -= 1
     }
     func minusButtonClick() {
+        zoomLevel += 1
     }
 
     func startStopButtonClick() {
         if startStopButton.text == "Start" {
             startStopButton.text = "Stop"
-            queue.async { [self] in
+            frameGrabberQueue.async { [self] in
                 frameGrabber.AttachDevice()
                 frameGrabber.PrintParams()
                 frameGrabber.GrabFrames(object: Unmanaged.passUnretained(self).toOpaque(), bufferCount: 5, timeout: 500)
                 { object, width, height, frame in
                     let mySelf = Unmanaged<MainWindow>.fromOpaque(object).takeUnretainedValue()
-                    mySelf.drawFrame(frame: frame, width: Int(width), height: Int(height))
+                    mySelf.drawFrame(frame: frame, width: width, height: height)
                 }
                 print("Stopped")
             }
@@ -58,13 +74,21 @@ class MainWindow: UIMainWindow {
 
     }
 
-    func drawFrame(frame: UnsafeRawPointer, width: Int, height: Int) {
-        dispatchQt {
+    func drawFrame(frame: UnsafeRawPointer, width: Int32, height: Int32) {
+        measureQueue.async {
+            let measure = LaplacianMeasure(height: height, width: width, imageBuffer: frame)
+            dispatchQt { [self] in
+                lapLabel.text = String(measure)
+            }
+        }
+        dispatchQt { [self] in
             // Draw picture
-            print("width:", width)
-            let dmxImage = QImage(data: frame, width: width, height: height, format: .Format_Grayscale8)
-            self.imageLabel.setImage(dmxImage)
-            self.imageLabel.scaledContents = true
+            let dmxImage = QImage(data: frame, width: Int(width), height: Int(height), format: .Format_Grayscale8)
+            self.imageLabel.setImage(dmxImage.scaled(
+                                        w: Int32(Float(width) / zoom[zoomLevel]),
+                                        h: Int32(Float(height) / zoom[zoomLevel]),
+                                        aspectMode: .KeepAspectRatio,
+                                        mode: .SmoothTransformation))
         }
     }
 }
