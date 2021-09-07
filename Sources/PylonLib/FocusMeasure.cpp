@@ -13,7 +13,7 @@
 using namespace std;
 using namespace cv;
 
-double LaplacianMeasure(int height, int width, void* imageBuffer) {
+double laplacianMeasure(int width, int height, void* imageBuffer) {
     Mat imageSource = cv::Mat(height, width, CV_8UC1, imageBuffer);
     Mat imageLaplacian;
     double focusMeasure;
@@ -23,17 +23,17 @@ double LaplacianMeasure(int height, int width, void* imageBuffer) {
     return focusMeasure;
 }
 
-double SobelMeasure(int height, int width, void* imageBuffer) {
+double sobelMeasure(int width, int height, void* imageBuffer) {
     Mat imageSource = cv::Mat(height, width, CV_8UC1, imageBuffer);
     Mat imageSobel;
     double focusMeasure;
 
-    Sobel(imageSobel, imageSobel, CV_16U, 1, 1);
+    Sobel(imageSource, imageSobel, CV_16U, 1, 1);
     focusMeasure = mean(imageSobel)[0];
     return focusMeasure;
 }
 
-double VarianceMeasure(int height, int width, void* imageBuffer) {
+double varianceMeasure(int width, int height, void* imageBuffer) {
     Mat imageSource = cv::Mat(height, width, CV_8UC1, imageBuffer);
     Mat focusMeasureImage;
     Mat meanStdValueImage;

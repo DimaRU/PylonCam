@@ -11,12 +11,12 @@ import Logging
 import PylonLib
 
 class MainWindow: UIMainWindow {
-    let zoom: [Float] = [0.5, 1, 2, 3, 4, 5, 8]
+    let zoomFactor: [Double] = [0.5, 1, 2, 3, 4, 5, 8]
     var zoomLevel = 1 {
         didSet {
             if zoomLevel == 0 {
                 plusButton.enabled = false
-            } else if zoomLevel == zoom.count - 1 {
+            } else if zoomLevel == zoomFactor.count - 1 {
                 minusButton.enabled = false
             } else {
                 minusButton.enabled = true
@@ -24,6 +24,8 @@ class MainWindow: UIMainWindow {
             }
         }
     }
+    var imageWidth = 4096
+    var imageHeight = 3008
     var frameGrabber: PylonFrameGrabber
     let frameGrabberQueue = DispatchQueue(label: "frameGrabber.Queue", qos: .userInitiated)
     let measureQueue = DispatchQueue(label: "measureFocus.Queue", qos: .userInteractive)
@@ -44,14 +46,30 @@ class MainWindow: UIMainWindow {
         plusButton.connectClicked(to: plusButtonClick)
         minusButton.connectClicked(to: minusButtonClick)
         startStopButton.connectClicked(to: startStopButtonClick)
+        centerButton.connectClicked(to: centerButtonClick)
         startStopButton.text = "Start"
     }
 
-    func plusButtonClick() {
+    private func plusButtonClick() {
         zoomLevel -= 1
+        setZoom(zoom: zoomFactor[zoomLevel])
     }
-    func minusButtonClick() {
+    private func minusButtonClick() {
         zoomLevel += 1
+        setZoom(zoom: zoomFactor[zoomLevel])
+    }
+
+    private func setZoom(zoom: Double) {
+        let zWidth = Double(imageWidth) / zoom
+        let zHeight = Double(imageHeight) / zoom
+        print(zWidth, zHeight, zoom)
+        imageLabel.resize(width: Int32(zWidth), height: Int32(zHeight))
+    }
+
+    func centerButtonClick() {
+        let zWidth = Double(imageWidth) / zoomFactor[zoomLevel] / 2
+        let zHeight = Double(imageHeight) / zoomFactor[zoomLevel] / 2
+        scrollArea.ensureVisible(x: Int32(zWidth), y: Int32(zHeight))
     }
 
     func startStopButtonClick() {
@@ -74,21 +92,29 @@ class MainWindow: UIMainWindow {
 
     }
 
-    func drawFrame(frame: UnsafeRawPointer, width: Int32, height: Int32) {
+    func getMeasureFunc() -> ((_: Int32, _: Int32, _: UnsafeMutableRawPointer) -> Double) {
+        if laplacianButton.checked {
+            return laplacianMeasure
+        } else if sobelButton.checked {
+            return sobelMeasure
+        } else if varianceButton.checked {
+            return varianceMeasure
+        }
+        return laplacianMeasure
+    }
+
+    func drawFrame(frame: UnsafeMutableRawPointer, width: Int32, height: Int32) {
         measureQueue.async {
-            let measure = LaplacianMeasure(height: height, width: width, imageBuffer: frame)
-            dispatchQt { [self] in
-                lapLabel.text = String(measure)
+            let measureFunc = self.getMeasureFunc()
+            let measure = measureFunc(width, height, frame)
+            dispatchQt {
+                self.lapLabel.text = String(measure)
             }
         }
         dispatchQt { [self] in
             // Draw picture
             let dmxImage = QImage(data: frame, width: Int(width), height: Int(height), format: .Format_Grayscale8)
-            self.imageLabel.setImage(dmxImage.scaled(
-                                        w: Int32(Float(width) / zoom[zoomLevel]),
-                                        h: Int32(Float(height) / zoom[zoomLevel]),
-                                        aspectMode: .KeepAspectRatio,
-                                        mode: .SmoothTransformation))
+            self.imageLabel.setImage(dmxImage)
         }
     }
 }

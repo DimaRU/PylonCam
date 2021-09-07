@@ -11,7 +11,7 @@
 
 #pragma clang assume_nonnull begin
 
-typedef void (*GrabCallback)(const void *object, int width, int height, const void * _Nonnull frame);
+typedef void (*GrabCallback)(const void *object, int width, int height, void * _Nonnull frame);
 
 #ifdef __cplusplus
 extern "C" {

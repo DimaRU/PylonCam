@@ -11,7 +11,7 @@ func main() -> Int32 {
     logger.info("PylonCam start")
 
     let application = QApplication()
-    application.setStype("Fusion")
+    application.setStyle("Fusion")
     let mainWindow = MainWindow()
     mainWindow.show()
     return application.exec()

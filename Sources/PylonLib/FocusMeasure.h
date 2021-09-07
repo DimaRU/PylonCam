@@ -13,11 +13,10 @@
 extern "C" {
 #endif
 
-double LaplacianMeasure(int height, int width, const void* imageBuffer) CF_SWIFT_NAME(LaplacianMeasure(height:width:imageBuffer:));
-double SobelMeasure(int height, int width, const void* imageBuffer) CF_SWIFT_NAME(SobelMeasure(height:width:imageBuffer:));
-double VarianceMeasure(int height, int width, const void* imageBuffer) CF_SWIFT_NAME(VarianceMeasure(height:width:imageBuffer:));
+double laplacianMeasure(int width, int height, void* _Nonnull imageBuffer) CF_SWIFT_NAME(laplacianMeasure(width:height:imageBuffer:));
+double sobelMeasure(int width, int height, void* _Nonnull imageBuffer) CF_SWIFT_NAME(sobelMeasure(width:height:imageBuffer:));
+double varianceMeasure(int width, int height, void* _Nonnull imageBuffer) CF_SWIFT_NAME(varianceMeasure(width:height:imageBuffer:));
 
 #ifdef __cplusplus
 }
 #endif
-
