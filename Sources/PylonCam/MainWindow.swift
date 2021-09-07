@@ -24,8 +24,8 @@ class MainWindow: UIMainWindow {
             }
         }
     }
-    var imageWidth = 4096
-    var imageHeight = 3008
+    var imageWidth = 0
+    var imageHeight = 0
     var frameGrabber: PylonFrameGrabber
     let frameGrabberQueue = DispatchQueue(label: "frameGrabber.Queue", qos: .userInitiated)
     let measureQueue = DispatchQueue(label: "measureFocus.Queue", qos: .userInteractive)
@@ -72,12 +72,30 @@ class MainWindow: UIMainWindow {
         scrollArea.ensureVisible(x: Int32(zWidth), y: Int32(zHeight))
     }
 
+    func setFocusParams() {
+        let area = frameGrabber.getMaxArea()
+        let xPart = (area.width / 3) & ~0xf
+        let yPart = (area.height) / 3 & ~0xf
+        let newWidth = (area.width - xPart * 2) & ~0xf
+        let newHeight = (area.height - yPart * 2) & ~0xf
+        let roiArea = frameGrabber.getAutoAOI()
+        print("Auto AOI:", roiArea)
+        imageHeight = Int(newHeight)
+        imageWidth = Int(newWidth)
+        let aoi = Area(offsetX: xPart, offsetY: yPart, width: newWidth, height: newHeight)
+        print("Camera: \(area.width)x\(area.height)")
+        print(aoi)
+        frameGrabber.setAOI(area: aoi)
+        frameGrabber.setAutoAOI(area: aoi)
+    }
+
     func startStopButtonClick() {
         if startStopButton.text == "Start" {
             startStopButton.text = "Stop"
             frameGrabberQueue.async { [self] in
                 frameGrabber.AttachDevice()
                 frameGrabber.PrintParams()
+                setFocusParams()
                 frameGrabber.GrabFrames(object: Unmanaged.passUnretained(self).toOpaque(), bufferCount: 5, timeout: 500)
                 { object, width, height, frame in
                     let mySelf = Unmanaged<MainWindow>.fromOpaque(object).takeUnretainedValue()

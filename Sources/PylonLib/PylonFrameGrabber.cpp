@@ -55,12 +55,14 @@ void CPylonDestroyDevice(const void *cameraPtr) {
     camera->DestroyDevice();
  }
 
-int CPylonIntParameter(const void *cameraPtr, const char *name)
+
+
+int64_t CPylonIntParameter(const void *cameraPtr, const char *name)
 {
     CInstantCamera *camera = (CInstantCamera *)cameraPtr;
     INodeMap& nodemap = camera->GetNodeMap();
     camera->Open();
-    int value = CIntegerParameter( nodemap, name ).GetValue();
+    int64_t value = CIntegerParameter( nodemap, name ).GetValue();
     camera->Close();
     return value;
 }
@@ -97,16 +99,6 @@ void CPylonPrintParams(const void *cameraPtr) {
         cout << "Vendor           : " << CStringParameter( nodemap, "DeviceVendorName" ).GetValue() << endl;
         cout << "Model            : " << CStringParameter( nodemap, "DeviceModelName" ).GetValue() << endl;
         cout << "Firmware version : " << CStringParameter( nodemap, "DeviceFirmwareVersion" ).GetValue() << endl << endl;
-        // Get the integer nodes describing the AOI.
-        CIntegerParameter offsetX( nodemap, "OffsetX" );
-        CIntegerParameter offsetY( nodemap, "OffsetY" );
-        CIntegerParameter width( nodemap, "Width" );
-        CIntegerParameter height( nodemap, "Height" );
-
-        cout << "OffsetX:OffsetY " << offsetX.GetValue() << ":" << offsetY.GetValue() << endl;
-        cout << "Width:Height " << width.GetValue() << ":" << height.GetValue() << endl;
-
-        cout << "Using device " << camera->GetDeviceInfo().GetModelName() << endl;
         camera->Close();
     }
     catch (const GenericException& e)
@@ -156,4 +148,77 @@ void CPylonGrabFrames(const void * _Nonnull cameraPtr,
         cerr << "An exception occurred." << endl
             << e.GetDescription() << endl;
     }
+}
+
+Area CPylonGetAOI(const void * cameraPtr) {
+    Area area;
+    CInstantCamera *camera = (CInstantCamera *)cameraPtr;
+    camera->Open();
+    INodeMap& nodemap = camera->GetNodeMap();
+    area.width = CIntegerParameter( nodemap, "Width" ).GetValue();
+    area.height = CIntegerParameter( nodemap, "Height" ).GetValue();
+    area.offsetX = CIntegerParameter( nodemap, "OffsetX" ).GetValue();
+    area.offsetY = CIntegerParameter( nodemap, "OffsetY" ).GetValue();
+    camera->Close();
+    return area;
+}
+
+Area CPylonGetAutoAOI(const void * cameraPtr) {
+    Area area;
+    CInstantCamera *camera = (CInstantCamera *)cameraPtr;
+    camera->Open();
+    INodeMap& nodemap = camera->GetNodeMap();
+    CEnumParameter(nodemap, "AutoFunctionAOISelector").SetValue("AOI1");
+    area.width = CIntegerParameter( nodemap, "AutoFunctionAOIWidth" ).GetValue();
+    area.height = CIntegerParameter( nodemap, "AutoFunctionAOIHeight" ).GetValue();
+    area.offsetX = CIntegerParameter( nodemap, "AutoFunctionAOIOffsetX" ).GetValue();
+    area.offsetY = CIntegerParameter( nodemap, "AutoFunctionAOIOffsetY" ).GetValue();
+    camera->Close();
+    return area;
+}
+
+void CPylonSetAOI(const void * cameraPtr, Area area) {
+    CInstantCamera *camera = (CInstantCamera *)cameraPtr;
+    try {
+        camera->Open();
+        INodeMap& nodemap = camera->GetNodeMap();
+        CIntegerParameter( nodemap, "Width" ).SetValue(area.width);
+        CIntegerParameter( nodemap, "Height" ).SetValue(area.height);
+        CIntegerParameter( nodemap, "OffsetX" ).SetValue(area.offsetX);
+        CIntegerParameter( nodemap, "OffsetY" ).SetValue(area.offsetY);
+    } catch (const GenericException& e)
+    {
+        cerr << "CPylon Error: " << e.GetDescription() << endl;
+    }
+    camera->Close();
+}
+
+void CPylonSetAutoAOI(const void * cameraPtr, Area area) {
+    CInstantCamera *camera = (CInstantCamera *)cameraPtr;
+    try {
+        camera->Open();
+        INodeMap& nodemap = camera->GetNodeMap();
+        CEnumParameter(nodemap, "AutoFunctionAOISelector").SetValue("AOI1");
+        CIntegerParameter( nodemap, "AutoFunctionAOIWidth" ).SetValue(area.width);
+        CIntegerParameter( nodemap, "AutoFunctionAOIHeight" ).SetValue(area.height);
+        CIntegerParameter( nodemap, "AutoFunctionAOIOffsetX" ).SetValue(area.offsetX);
+        CIntegerParameter( nodemap, "AutoFunctionAOIOffsetY" ).SetValue(area.offsetY);
+    } catch (const GenericException& e)
+    {
+        cerr << "CPylon Error: " << e.GetDescription() << endl;
+    }
+    camera->Close();
+}
+
+Area CPylonGetMaxArea(const void * cameraPtr) {
+    Area area;
+    CInstantCamera *camera = (CInstantCamera *)cameraPtr;
+    camera->Open();
+    INodeMap& nodemap = camera->GetNodeMap();
+    area.offsetX = 0;
+    area.offsetY = 0;
+    area.width = CIntegerParameter( nodemap, "WidthMax" ).GetValue();
+    area.height = CIntegerParameter( nodemap, "HeightMax" ).GetValue();
+    camera->Close();
+    return area;
 }

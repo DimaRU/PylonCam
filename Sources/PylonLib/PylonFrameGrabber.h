@@ -8,6 +8,7 @@
 #pragma once
 #include "SwiftDefs.h"
 #include <stdbool.h>
+#include <stdint.h>
 
 #pragma clang assume_nonnull begin
 
@@ -16,6 +17,13 @@ typedef void (*GrabCallback)(const void *object, int width, int height, void * _
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+typedef struct _area {
+    int64_t offsetX;
+    int64_t offsetY;
+    int64_t width;
+    int64_t height;
+} Area;
 
 typedef struct {
     const void * _Nonnull cameraPointer;
@@ -36,9 +44,14 @@ void CPylonGrabFrames(const void * _Nonnull cameraPtr,
                       int bufferCount,
                       int timeout,
                       GrabCallback _Nonnull grabCallback) CF_SWIFT_NAME(PylonFrameGrabber.GrabFrames(self:object:bufferCount:timeout:callBack:));
-int CPylonIntParameter(const void * _Nonnull cameraPtr, const char * _Nonnull name) CF_SWIFT_NAME(PylonFrameGrabber.IntParameter(self:name:));
+int64_t CPylonIntParameter(const void * _Nonnull cameraPtr, const char * _Nonnull name) CF_SWIFT_NAME(PylonFrameGrabber.IntParameter(self:name:));
 double CPylonFloatParameter(const void * _Nonnull cameraPtr, const char * _Nonnull name) CF_SWIFT_NAME(PylonFrameGrabber.FloatParameter(self:name:));
 const char * _Nonnull CPylonStringParameter(const void * _Nonnull cameraPtr, const char * _Nonnull name) CF_SWIFT_NAME(PylonFrameGrabber.StringParameter(self:name:));
+Area CPylonGetAOI(const void * _Nonnull cameraPtr) CF_SWIFT_NAME(PylonFrameGrabber.getAOI(self:));
+Area CPylonGetAutoAOI(const void * _Nonnull cameraPtr) CF_SWIFT_NAME(PylonFrameGrabber.getAutoAOI(self:));
+void CPylonSetAOI(const void * _Nonnull cameraPtr, Area area) CF_SWIFT_NAME(PylonFrameGrabber.setAOI(self:area:));
+void CPylonSetAutoAOI(const void * _Nonnull cameraPtr, Area area) CF_SWIFT_NAME(PylonFrameGrabber.setAutoAOI(self:area:));
+Area CPylonGetMaxArea(const void * _Nonnull cameraPtr) CF_SWIFT_NAME(PylonFrameGrabber.getMaxArea(self:));
 
 #ifdef __cplusplus
 }
