@@ -26,13 +26,13 @@ class MainWindow: UIMainWindow {
     }
     var imageWidth = 0
     var imageHeight = 0
-    var frameGrabber: PylonFrameGrabber
+    var frameGrabber: PylonGrabber
     let frameGrabberQueue = DispatchQueue(label: "frameGrabber.Queue", qos: .userInitiated)
     let measureQueue = DispatchQueue(label: "measureFocus.Queue", qos: .userInteractive)
 
     init() {
         PylonInitialize()
-        frameGrabber = PylonFrameGrabber()
+        frameGrabber = PylonGrabber()
         super.init()
         connectButtons()
     }
@@ -62,7 +62,6 @@ class MainWindow: UIMainWindow {
     private func setZoom(zoom: Double) {
         let zWidth = Double(imageWidth) / zoom
         let zHeight = Double(imageHeight) / zoom
-        print(zWidth, zHeight, zoom)
         imageLabel.resize(width: Int32(zWidth), height: Int32(zHeight))
     }
 
@@ -89,23 +88,47 @@ class MainWindow: UIMainWindow {
         frameGrabber.setAutoAOI(area: aoi)
     }
 
+    func tryConnect() -> Bool {
+        print(frameGrabber.IsPylonDeviceAttached(), frameGrabber.HasOwnership(), frameGrabber.IsOpen())
+        if !frameGrabber.IsPylonDeviceAttached() {
+            frameGrabber.AttachDevice()
+            guard !frameGrabber.errorFlag else {
+                statusBar.showMessage(message: String(cString: frameGrabber.getString, encoding: .utf8)!)
+                return false
+            }
+        }
+        if !frameGrabber.IsOpen() {
+            frameGrabber.cameraStart()
+            guard !frameGrabber.errorFlag else {
+                statusBar.showMessage(message: String(cString: frameGrabber.getString, encoding: .utf8)!)
+                return false
+            }
+        }
+        print(frameGrabber.IsPylonDeviceAttached(), frameGrabber.HasOwnership(), frameGrabber.IsOpen())
+        frameGrabber.PrintParams()
+        let model = frameGrabber.StringParameter(name: "DeviceModelName")
+        statusBar.showMessage(message: String(cString: model, encoding: .utf8)!)
+        setFocusParams()
+        return true
+    }
+
     func startStopButtonClick() {
         if startStopButton.text == "Start" {
+            guard tryConnect() else {
+                return
+            }
             startStopButton.text = "Stop"
             frameGrabberQueue.async { [self] in
-                frameGrabber.AttachDevice()
-                frameGrabber.PrintParams()
-                setFocusParams()
                 frameGrabber.GrabFrames(object: Unmanaged.passUnretained(self).toOpaque(), bufferCount: 5, timeout: 500)
                 { object, width, height, frame in
                     let mySelf = Unmanaged<MainWindow>.fromOpaque(object).takeUnretainedValue()
                     mySelf.drawFrame(frame: frame, width: width, height: height)
                 }
-                print("Stopped")
             }
         } else {
             startStopButton.text = "Start"
             self.frameGrabber.GrabStop()
+            self.frameGrabber.cameraStop()
         }
 
     }

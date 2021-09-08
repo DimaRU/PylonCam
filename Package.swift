@@ -7,7 +7,8 @@ let package = Package(
     platforms: [.macOS(.v11)],
     dependencies: [
         .package(name: "Qlift", url: "https://github.com/DimaRU/qlift", .branch("master")),
-        .package(url: "https://github.com/ianpartridge/swift-log-syslog.git", from: "1.0.0"),
+        .package(url: "https://github.com/ianpartridge/swift-log-syslog", from: "1.0.0"),
+        .package(url: "https://github.com/swift-server/swift-backtrace", from: "1.0.0")
     ],
     targets: [
         .target(
@@ -15,6 +16,7 @@ let package = Package(
             dependencies: [
                 "Qlift",
                 "PylonLib",
+                .product(name: "Backtrace", package: "swift-backtrace", condition: .when(platforms: [.linux])),
                 .product(name: "LoggingSyslog", package: "swift-log-syslog")
             ],
             linkerSettings: [

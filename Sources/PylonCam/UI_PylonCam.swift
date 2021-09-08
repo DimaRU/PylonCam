@@ -299,5 +299,14 @@ border-radius: 8px;
         horizontalLayoutButtons.add(widget: minusButton)
         verticalLayout.add(widget: frameButtons)
         self.centralWidget = centralwidget
+        statusBar = QStatusBar(parent: self)
+        statusBar.name = "statusBar"
+        statusBar.styleSheet = """
+font-family: Rubik;
+font-style: normal;
+font-weight: 500;
+font-size: 14px;
+color: white;
+"""
     }
 }

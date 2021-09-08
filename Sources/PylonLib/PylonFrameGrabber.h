@@ -18,7 +18,7 @@ typedef void (*GrabCallback)(const void *object, int width, int height, void * _
 extern "C" {
 #endif
 
-typedef struct _area {
+typedef struct {
     int64_t offsetX;
     int64_t offsetY;
     int64_t width;
@@ -26,32 +26,44 @@ typedef struct _area {
 } Area;
 
 typedef struct {
-    const void * _Nonnull cameraPointer;
-} PylonFrameGrabber;
+    const void * _Nonnull camera;
+    bool errorFlag;
+    char stringBuffer[256];
+} PylonGrabber;
 
 void CPylonInitialize(void) CF_SWIFT_NAME(PylonInitialize());
 void CPylonTerminate(void) CF_SWIFT_NAME(PylonTerminate());
 
-const void * _Nonnull CPylonCreateCamera(void) CF_SWIFT_NAME(PylonFrameGrabber.init());
-bool CPylonAttachDevice(const void * _Nonnull cameraPtr) CF_SWIFT_NAME(PylonFrameGrabber.AttachDevice(self:));
-void CPylonExecuteSoftwareTrigger(const void * _Nonnull cameraPtr) CF_SWIFT_NAME(PylonFrameGrabber.ExecuteSoftwareTrigger(self:));
-void CPylonDestroyDevice(const void * _Nonnull cameraPtr) CF_SWIFT_NAME(PylonFrameGrabber.DestroyDevice(self:));
-void CPylonReleaseCamera(const void * _Nonnull cameraPtr) CF_SWIFT_NAME(PylonFrameGrabber.ReleaseCamera(self:));
-void CPylonPrintParams(const void * _Nonnull cameraPtr) CF_SWIFT_NAME(PylonFrameGrabber.PrintParams(self:));
-void CPylonGrabStop(const void * _Nonnull cameraPtr) CF_SWIFT_NAME(PylonFrameGrabber.GrabStop(self:));
-void CPylonGrabFrames(const void * _Nonnull cameraPtr,
+PylonGrabber CPylonCreateCamera(void) CF_SWIFT_NAME(PylonGrabber.init());
+void CPylonAttachDevice(PylonGrabber  * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.AttachDevice(self:));
+char * _Nonnull CPylonGetString(PylonGrabber  * _Nonnull frameGrabber) CF_SWIFT_NAME(getter:PylonGrabber.getString(self:));
+void CPylonExecuteSoftwareTrigger(PylonGrabber  * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.ExecuteSoftwareTrigger(self:));
+void CPylonDestroyDevice(PylonGrabber  * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.DestroyDevice(self:));
+void CPylonReleaseCamera(PylonGrabber  * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.ReleaseCamera(self:));
+void CPylonPrintParams(PylonGrabber  * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.PrintParams(self:));
+void CPylonGrabStop(PylonGrabber  * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.GrabStop(self:));
+void CPylonCameraStart(PylonGrabber  * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.cameraStart(self:));
+void CPylonCameraStop(PylonGrabber  * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.cameraStop(self:));
+
+void CPylonGrabFrames(PylonGrabber  * _Nonnull frameGrabber,
                       const void * _Nonnull object,
                       int bufferCount,
                       int timeout,
-                      GrabCallback _Nonnull grabCallback) CF_SWIFT_NAME(PylonFrameGrabber.GrabFrames(self:object:bufferCount:timeout:callBack:));
-int64_t CPylonIntParameter(const void * _Nonnull cameraPtr, const char * _Nonnull name) CF_SWIFT_NAME(PylonFrameGrabber.IntParameter(self:name:));
-double CPylonFloatParameter(const void * _Nonnull cameraPtr, const char * _Nonnull name) CF_SWIFT_NAME(PylonFrameGrabber.FloatParameter(self:name:));
-const char * _Nonnull CPylonStringParameter(const void * _Nonnull cameraPtr, const char * _Nonnull name) CF_SWIFT_NAME(PylonFrameGrabber.StringParameter(self:name:));
-Area CPylonGetAOI(const void * _Nonnull cameraPtr) CF_SWIFT_NAME(PylonFrameGrabber.getAOI(self:));
-Area CPylonGetAutoAOI(const void * _Nonnull cameraPtr) CF_SWIFT_NAME(PylonFrameGrabber.getAutoAOI(self:));
-void CPylonSetAOI(const void * _Nonnull cameraPtr, Area area) CF_SWIFT_NAME(PylonFrameGrabber.setAOI(self:area:));
-void CPylonSetAutoAOI(const void * _Nonnull cameraPtr, Area area) CF_SWIFT_NAME(PylonFrameGrabber.setAutoAOI(self:area:));
-Area CPylonGetMaxArea(const void * _Nonnull cameraPtr) CF_SWIFT_NAME(PylonFrameGrabber.getMaxArea(self:));
+                      GrabCallback _Nonnull grabCallback) CF_SWIFT_NAME(PylonGrabber.GrabFrames(self:object:bufferCount:timeout:callBack:));
+int64_t CPylonIntParameter(PylonGrabber  * _Nonnull frameGrabber, const char * _Nonnull name) CF_SWIFT_NAME(PylonGrabber.IntParameter(self:name:));
+double CPylonFloatParameter(PylonGrabber  * _Nonnull frameGrabber, const char * _Nonnull name) CF_SWIFT_NAME(PylonGrabber.FloatParameter(self:name:));
+const char * _Nonnull CPylonStringParameter(PylonGrabber  * _Nonnull frameGrabber, const char * _Nonnull name) CF_SWIFT_NAME(PylonGrabber.StringParameter(self:name:));
+Area CPylonGetAOI(PylonGrabber  * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.getAOI(self:));
+Area CPylonGetAutoAOI(PylonGrabber  * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.getAutoAOI(self:));
+void CPylonSetAOI(PylonGrabber  * _Nonnull frameGrabber, Area area) CF_SWIFT_NAME(PylonGrabber.setAOI(self:area:));
+void CPylonSetAutoAOI(PylonGrabber  * _Nonnull frameGrabber, Area area) CF_SWIFT_NAME(PylonGrabber.setAutoAOI(self:area:));
+Area CPylonGetMaxArea(PylonGrabber  * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.getMaxArea(self:));
+
+bool CPylonIsPylonDeviceAttached(PylonGrabber  * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.IsPylonDeviceAttached(self:));
+bool CPylonIsCameraDeviceRemoved(PylonGrabber  * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.IsCameraDeviceRemoved(self:));
+bool CPylonHasOwnership(PylonGrabber  * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.HasOwnership(self:));
+bool CPylonIsOpen(PylonGrabber  * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.IsOpen(self:));
+bool CPylonIsGrabbing(PylonGrabber  * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.IsGrabbing(self:));
 
 #ifdef __cplusplus
 }

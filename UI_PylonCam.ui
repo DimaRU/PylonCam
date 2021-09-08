@@ -468,6 +468,15 @@ border-radius: 8px;
     </item>
    </layout>
   </widget>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="styleSheet">
+    <string notr="true">font-family: Rubik;
+font-style: normal;
+font-weight: 500;
+font-size: 14px;
+color: white;</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

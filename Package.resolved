@@ -6,8 +6,17 @@
         "repositoryURL": "https://github.com/DimaRU/qlift",
         "state": {
           "branch": "master",
-          "revision": "99157566cb151b10d75ad2c6ba502c4bd1695787",
+          "revision": "0f215785e06e8f42a193b9243ae5d97f9f394b06",
           "version": null
+        }
+      },
+      {
+        "package": "swift-backtrace",
+        "repositoryURL": "https://github.com/swift-server/swift-backtrace",
+        "state": {
+          "branch": null,
+          "revision": "d3e04a9d4b3833363fb6192065b763310b156d54",
+          "version": "1.3.1"
         }
       },
       {
@@ -21,7 +30,7 @@
       },
       {
         "package": "swift-log-syslog",
-        "repositoryURL": "https://github.com/ianpartridge/swift-log-syslog.git",
+        "repositoryURL": "https://github.com/ianpartridge/swift-log-syslog",
         "state": {
           "branch": null,
           "revision": "654ea6e32b9802c45468c4c743ed507c36a775c2",
