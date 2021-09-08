@@ -11,28 +11,31 @@ import Qlift
 
 class UIMainWindow: QMainWindow {
     var centralwidget: QWidget!
-    var verticalLayout: QVBoxLayout!
+    var verticalLayout_3: QVBoxLayout!
     var horizontalLayout_3: QHBoxLayout!
     var pageHeaderlabel: QLabel!
     var horizontalSpacer: QSpacerItem!
     var horizontalLayout: QHBoxLayout!
     var lapLabel: QLabel!
     var bestLabel: QLabel!
+    var horizontalLayout_4: QHBoxLayout!
+    var scrollArea: QScrollArea!
+    var imageLabel: QLabel!
+    var frameButtons: QFrame!
+    var verticalLayout: QVBoxLayout!
     var groupBox: QGroupBox!
     var verticalLayout_2: QVBoxLayout!
     var laplacianButton: QRadioButton!
     var sobelButton: QRadioButton!
     var varianceButton: QRadioButton!
-    var scrollArea: QScrollArea!
-    var imageLabel: QLabel!
-    var frameButtons: QFrame!
-    var layoutWidget1: QWidget!
-    var horizontalLayoutButtons: QHBoxLayout!
+    var verticalSpacer_2: QSpacerItem!
     var startStopButton: QPushButton!
-    var horizontalSpacer_3: QSpacerItem!
+    var verticalSpacer_3: QSpacerItem!
     var centerButton: QPushButton!
-    var horizontalSpacer_2: QSpacerItem!
+    var verticalSpacer: QSpacerItem!
+    var horizontalLayout_2: QHBoxLayout!
     var plusButton: QPushButton!
+    var horizontalSpacer_2: QSpacerItem!
     var minusButton: QPushButton!
 
     override init(parent: QWidget? = nil, flags: Qt.WindowFlags = .Widget) {
@@ -45,9 +48,9 @@ background: #284465;
 """
         centralwidget = QWidget(parent: self)
         centralwidget.name = "centralwidget"
-        verticalLayout = QVBoxLayout(parent: centralwidget)
-        verticalLayout.contentsMargins = QMargins(left: 20, top: 10, right: 20, bottom: 2)
-        verticalLayout.spacing = 8
+        verticalLayout_3 = QVBoxLayout(parent: centralwidget)
+        verticalLayout_3.contentsMargins = QMargins(left: 20, top: 20, right: 0, bottom: 0)
+        verticalLayout_3.spacing = 20
         horizontalLayout_3 = QHBoxLayout(parent: nil)
         horizontalLayout_3.contentsMargins = QMargins(left: 0, top: 0, right: 0, bottom: 0)
         pageHeaderlabel = QLabel(parent: centralwidget)
@@ -108,75 +111,28 @@ min-height: 40px;
 min-width: 192px;
 border: 1px solid transparent;
 """
-        bestLabel.text = "best: 0"
+        bestLabel.text = "best: "
         bestLabel.alignment = [.AlignLeading, .AlignLeft, .AlignVCenter]
         horizontalLayout.add(widget: bestLabel)
         horizontalLayout_3.add(layout: horizontalLayout)
-        groupBox = QGroupBox(parent: centralwidget)
-        groupBox.name = "groupBox"
-        groupBox.styleSheet = """
-QRadioButton {
-  font-family: Rubik;
-  font-style: normal;
-  font-weight: 500;  color: white;
-}
-QRadioButton::indicator {
-  color: white;
-
-//  width:               10px;
-//  height:              10px;
-//   border-radius: 7px;
-}
-QRadioButton::indicator:checked {
-  color: white;
-   background-color: white;
-// ;   border:                 2px solid white;
-}
-QRadioButton::indicator:unchecked {
-   background-color:  white;
-// ;   border:                 2px solid white;
-}
-QRadioButton:checked{
-    background-color: gray;
-}
-
-QRadioButton:unchecked{
-//   background-color: black;
-}
-"""
-        groupBox.title = ""
-        verticalLayout_2 = QVBoxLayout(parent: groupBox)
-        verticalLayout_2.contentsMargins = QMargins(left: 0, top: 0, right: 0, bottom: 0)
-        laplacianButton = QRadioButton(parent: groupBox)
-        laplacianButton.name = "laplacianButton"
-        laplacianButton.text = "Laplacian"
-        laplacianButton.checked = true
-        verticalLayout_2.add(widget: laplacianButton)
-        sobelButton = QRadioButton(parent: groupBox)
-        sobelButton.name = "sobelButton"
-        sobelButton.text = "Sobel"
-        verticalLayout_2.add(widget: sobelButton)
-        varianceButton = QRadioButton(parent: groupBox)
-        varianceButton.name = "varianceButton"
-        varianceButton.text = "Variance"
-        verticalLayout_2.add(widget: varianceButton)
-        horizontalLayout_3.add(widget: groupBox)
-        verticalLayout.add(layout: horizontalLayout_3)
+        verticalLayout_3.add(layout: horizontalLayout_3)
+        horizontalLayout_4 = QHBoxLayout(parent: nil)
+        horizontalLayout_4.contentsMargins = QMargins(left: 0, top: 0, right: 0, bottom: 0)
+        horizontalLayout_4.spacing = 0
         scrollArea = QScrollArea(parent: centralwidget)
         scrollArea.name = "scrollArea"
         scrollArea.widgetResizable = false
         imageLabel = QLabel()
         imageLabel.name = "imageLabel"
-        imageLabel.geometry = QRect(x: 0, y: 0, width: 1001, height: 612)
+        imageLabel.geometry = QRect(x: 0, y: 0, width: 8, height: 16)
         imageLabel.sizePolicy = QSizePolicy(horizontal: .Ignored, vertical: .Ignored)
         imageLabel.scaledContents = true
         scrollArea.setWidget(imageLabel)
-        verticalLayout.add(widget: scrollArea)
+        horizontalLayout_4.add(widget: scrollArea)
         frameButtons = QFrame(parent: centralwidget)
         frameButtons.name = "frameButtons"
-        frameButtons.sizePolicy = QSizePolicy(horizontal: .Minimum, vertical: .Minimum)
-        frameButtons.minimumSize = QSize(width: 174, height: 95)
-        frameButtons.maximumSize = QSize(width: 16777215, height: 95)
+        frameButtons.minimumSize = QSize(width: 200, height: 0)
+        frameButtons.maximumSize = QSize(width: 200, height: 16777215)
         frameButtons.autoFillBackground = false
         frameButtons.styleSheet = """
 QFrame {
@@ -189,8 +145,6 @@ font-weight: 500;
 font-size: 32px;
 opacity: 0.94;
 height: 60px;
-width: 60px;
-max-width: 60px;
 max-height: 60px;
 min-height: 60px;
 min-width: 60px;
@@ -217,22 +171,76 @@ border-radius: 8px;
 }
 """
         frameButtons.frameShape = .NoFrame
-        layoutWidget1 = QWidget(parent: frameButtons)
-        layoutWidget1.name = "layoutWidget1"
-        layoutWidget1.geometry = QRect(x: 10, y: 10, width: 1001, height: 72)
-        horizontalLayoutButtons = QHBoxLayout(parent: layoutWidget1)
-        horizontalLayoutButtons.contentsMargins = QMargins(left: -1, top: -1, right: 10, bottom: -1)
-        horizontalLayoutButtons.spacing = 30
-        startStopButton = QPushButton(parent: layoutWidget1)
+        verticalLayout = QVBoxLayout(parent: frameButtons)
+        verticalLayout.contentsMargins = QMargins(left: 10, top: 20, right: 20, bottom: 20)
+        verticalLayout.spacing = 0
+        groupBox = QGroupBox(parent: frameButtons)
+        groupBox.name = "groupBox"
+        groupBox.sizePolicy = QSizePolicy(horizontal: .Expanding, vertical: .Expanding)
+        groupBox.minimumSize = QSize(width: 0, height: 0)
+        groupBox.styleSheet = """
+QGroupBox {
+  border:  0px solid transparent;
+  background-color: transparent;
+}
+
+QRadioButton {
+  font-family: Rubik;
+  font-style: normal;
+  font-size: 30px;
+  color: white;
+  border:    4px solid transparent;
+}
+QRadioButton::indicator {
+  color: white;
+//  width:               20px;
+//  height:              20px;
+//   border-radius: 7px;
+}
+QRadioButton::indicator:checked {
+  color: white;
+   background-color: white;
+//   border:                 2px solid white;
+}
+QRadioButton::indicator:unchecked {
+   background-color:  white;
+//    border:                 2px solid white;
+}
+QRadioButton:checked{
+    background-color: gray;
+}
+
+QRadioButton:unchecked{
+//   background-color: black;
+}
+"""
+        groupBox.title = ""
+        verticalLayout_2 = QVBoxLayout(parent: groupBox)
+        verticalLayout_2.contentsMargins = QMargins(left: 10, top: 0, right: 0, bottom: 0)
+        verticalLayout_2.spacing = 15
+        laplacianButton = QRadioButton(parent: groupBox)
+        laplacianButton.name = "laplacianButton"
+        laplacianButton.text = "Laplacian"
+        laplacianButton.checked = true
+        verticalLayout_2.add(widget: laplacianButton)
+        sobelButton = QRadioButton(parent: groupBox)
+        sobelButton.name = "sobelButton"
+        sobelButton.text = "Sobel"
+        verticalLayout_2.add(widget: sobelButton)
+        varianceButton = QRadioButton(parent: groupBox)
+        varianceButton.name = "varianceButton"
+        varianceButton.text = "Variance"
+        verticalLayout_2.add(widget: varianceButton)
+        verticalLayout.add(widget: groupBox)
+        verticalSpacer_2 = QSpacerItem(width: 20, height: 40, horizontalPolicy: .Minimum, verticalPolicy: .Expanding)
+        verticalLayout.add(item: verticalSpacer_2)
+        startStopButton = QPushButton(parent: frameButtons)
         startStopButton.name = "startStopButton"
-        startStopButton.minimumSize = QSize(width: 162, height: 62)
-        startStopButton.maximumSize = QSize(width: 62, height: 62)
+        startStopButton.minimumSize = QSize(width: 62, height: 62)
         startStopButton.styleSheet = """
 QPushButton {
 opacity: 0.94;
-max-width: 160px;
 max-height: 60px;
-min-width: 160px;
 min-height: 60px;
 }
 QPushButton:enabled { 
@@ -244,19 +252,17 @@ border-radius: 8px;
 """
         startStopButton.text = "Start"
         startStopButton.isFlat = false
-        horizontalLayoutButtons.add(widget: startStopButton)
-        horizontalSpacer_3 = QSpacerItem(width: 40, height: 20, horizontalPolicy: .Expanding, verticalPolicy: .Minimum)
-        horizontalLayoutButtons.add(item: horizontalSpacer_3)
-        centerButton = QPushButton(parent: layoutWidget1)
+        verticalLayout.add(widget: startStopButton)
+        verticalSpacer_3 = QSpacerItem(width: 20, height: 40, horizontalPolicy: .Minimum, verticalPolicy: .Fixed)
+        verticalLayout.add(item: verticalSpacer_3)
+        centerButton = QPushButton(parent: frameButtons)
         centerButton.name = "centerButton"
-        centerButton.minimumSize = QSize(width: 162, height: 62)
-        centerButton.maximumSize = QSize(width: 62, height: 62)
+        centerButton.sizePolicy = QSizePolicy(horizontal: .Expanding, vertical: .Fixed)
+        centerButton.minimumSize = QSize(width: 62, height: 62)
         centerButton.styleSheet = """
 QPushButton {
 opacity: 0.94;
-max-width: 160px;
 max-height: 60px;
-min-width: 160px;
 min-height: 60px;
 }
 QPushButton:enabled { 
@@ -268,10 +274,13 @@ border-radius: 8px;
 """
         centerButton.text = "Center"
         centerButton.isFlat = false
-        horizontalLayoutButtons.add(widget: centerButton)
-        horizontalSpacer_2 = QSpacerItem(width: 40, height: 20, horizontalPolicy: .Expanding, verticalPolicy: .Minimum)
-        horizontalLayoutButtons.add(item: horizontalSpacer_2)
-        plusButton = QPushButton(parent: layoutWidget1)
+        verticalLayout.add(widget: centerButton)
+        verticalSpacer = QSpacerItem(width: 20, height: 40, horizontalPolicy: .Minimum, verticalPolicy: .Expanding)
+        verticalLayout.add(item: verticalSpacer)
+        horizontalLayout_2 = QHBoxLayout(parent: nil)
+        horizontalLayout_2.contentsMargins = QMargins(left: 0, top: 0, right: 0, bottom: 0)
+        horizontalLayout_2.spacing = 0
+        plusButton = QPushButton(parent: frameButtons)
         plusButton.name = "plusButton"
         plusButton.styleSheet = """
 QPushButton:enabled { 
@@ -283,8 +292,10 @@ border-radius: 8px;
 """
         plusButton.text = "+"
         plusButton.isFlat = false
-        horizontalLayoutButtons.add(widget: plusButton)
-        minusButton = QPushButton(parent: layoutWidget1)
+        horizontalLayout_2.add(widget: plusButton)
+        horizontalSpacer_2 = QSpacerItem(width: 40, height: 20, horizontalPolicy: .Expanding, verticalPolicy: .Minimum)
+        horizontalLayout_2.add(item: horizontalSpacer_2)
+        minusButton = QPushButton(parent: frameButtons)
         minusButton.name = "minusButton"
         minusButton.styleSheet = """
 QPushButton:enabled { 
@@ -296,8 +307,10 @@ border-radius: 8px;
 """
         minusButton.text = "-"
         minusButton.isFlat = false
-        horizontalLayoutButtons.add(widget: minusButton)
-        verticalLayout.add(widget: frameButtons)
+        horizontalLayout_2.add(widget: minusButton)
+        verticalLayout.add(layout: horizontalLayout_2)
+        horizontalLayout_4.add(widget: frameButtons)
+        verticalLayout_3.add(layout: horizontalLayout_4)
         self.centralWidget = centralwidget
         statusBar = QStatusBar(parent: self)
         statusBar.name = "statusBar"

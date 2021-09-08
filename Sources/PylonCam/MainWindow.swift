@@ -24,6 +24,7 @@ class MainWindow: UIMainWindow {
             }
         }
     }
+    var bestMeasure: Double? = nil
     var imageWidth = 0
     var imageHeight = 0
     var frameGrabber: PylonGrabber
@@ -47,9 +48,15 @@ class MainWindow: UIMainWindow {
         minusButton.connectClicked(to: minusButtonClick)
         startStopButton.connectClicked(to: startStopButtonClick)
         centerButton.connectClicked(to: centerButtonClick)
+        laplacianButton.connectToggled(to: meashureButtonToggle)
+        sobelButton.connectToggled(to: meashureButtonToggle)
+        varianceButton.connectToggled(to: meashureButtonToggle)
         startStopButton.text = "Start"
     }
 
+    private func meashureButtonToggle(_ state: Bool) {
+        bestMeasure = nil
+    }
     private func plusButtonClick() {
         zoomLevel -= 1
         setZoom(zoom: zoomFactor[zoomLevel])
@@ -130,7 +137,6 @@ class MainWindow: UIMainWindow {
             self.frameGrabber.GrabStop()
             self.frameGrabber.cameraStop()
         }
-
     }
 
     func getMeasureFunc() -> ((_: Int32, _: Int32, _: UnsafeMutableRawPointer) -> Double) {
@@ -149,7 +155,11 @@ class MainWindow: UIMainWindow {
             let measureFunc = self.getMeasureFunc()
             let measure = measureFunc(width, height, frame)
             dispatchQt {
-                self.lapLabel.text = String(measure)
+                self.lapLabel.text = String(format: "Measure: %.2f", measure)
+                if self.bestMeasure ?? Double.greatestFiniteMagnitude > measure {
+                    self.bestMeasure = measure
+                    self.bestLabel.text = String(format: "Best: %.2f", self.bestMeasure!)
+                }
             }
         }
         dispatchQt { [self] in
