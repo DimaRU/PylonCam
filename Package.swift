@@ -24,15 +24,18 @@ let package = Package(
                 .linkedFramework("QtCore", .when(platforms: [.macOS])),
                 .linkedFramework("QtGui", .when(platforms: [.macOS])),
                 .linkedFramework("Pylon", .when(platforms: [.macOS])),
-                .unsafeFlags(["-rpath"], .when(platforms: [.macOS])),
-                .unsafeFlags(["/Library/Frameworks"], .when(platforms: [.macOS])),
+                .unsafeFlags(["-rpath", "/Library/Frameworks"], .when(platforms: [.macOS])),
+                .unsafeFlags([
+                    "-Xlinker", "-rpath=/opt/pylon/lib",
+                    "-Xlinker", "-rpath=/opt/qt5.15/lib",
+                ], .when(platforms: [.linux])),
             ]
         ),
         .target(
             name: "PylonLib",
             dependencies: ["CPylon", "COpencv4"]
         ),
-        .systemLibrary(name: "CPylon", pkgConfig: "Pylon"),
+        .systemLibrary(name: "CPylon", pkgConfig: "pylon"),
         .systemLibrary(name: "COpencv4", pkgConfig: "opencv4"),
     ],
     cxxLanguageStandard: .cxx1z

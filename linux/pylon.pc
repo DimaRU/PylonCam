@@ -1,0 +1,10 @@
+prefix=/opt/pylon
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: Pylon
+Description: Pylon Framework
+Version: 6.2.0
+Libs: -L${libdir} -E -lpylonbase -lpylonutility -lGenApi_gcc_v3_1_Basler_pylon -lGCBase_gcc_v3_1_Basler_pylon
+Cflags: -I${includedir} -I${includedir}/GenICam -F${libdir}
