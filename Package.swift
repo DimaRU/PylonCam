@@ -15,7 +15,8 @@ let package = Package(
             name: "PylonCam",
             dependencies: [
                 "Qlift",
-                "PylonLib",
+                "PylonFrameGrabber",
+                "FocusMeasure",
                 .product(name: "Backtrace", package: "swift-backtrace", condition: .when(platforms: [.linux])),
                 .product(name: "LoggingSyslog", package: "swift-log-syslog")
             ],
@@ -32,8 +33,12 @@ let package = Package(
             ]
         ),
         .target(
-            name: "PylonLib",
-            dependencies: ["CPylon", "COpencv4"]
+            name: "PylonFrameGrabber",
+            dependencies: ["CPylon"]
+        ),
+        .target(
+            name: "FocusMeasure",
+            dependencies: ["COpencv4"]
         ),
         .systemLibrary(name: "CPylon", pkgConfig: "pylon"),
         .systemLibrary(name: "COpencv4", pkgConfig: "opencv4"),

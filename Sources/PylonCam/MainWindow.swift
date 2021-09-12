@@ -8,7 +8,8 @@
 import Foundation
 import Qlift
 import Logging
-import PylonLib
+import PylonFrameGrabber
+import FocusMeasure
 
 class MainWindow: UIMainWindow {
     let zoomFactor: [Double] = [0.5, 1, 2, 3, 4, 5, 8]

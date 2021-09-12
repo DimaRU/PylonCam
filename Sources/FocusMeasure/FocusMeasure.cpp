@@ -1,6 +1,6 @@
 //
-//  GetFocusMeasure.cpp
-//  
+//  FocusMeasure.cpp
+//
 //
 //  Created by Dmitriy Borovikov on 01.09.2021.
 //

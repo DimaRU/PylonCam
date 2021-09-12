@@ -6,7 +6,7 @@
 //
 
 #include <pylon/PylonIncludes.h>
-#include "PylonLib.h"
+#include "PylonFrameGrabber.h"
 
 using namespace Pylon;
 using namespace GenApi;
