@@ -162,10 +162,17 @@ class MainWindow: UIMainWindow {
             let measure = measureFunc(width, height, frame)
             dispatchQt {
                 self.lapLabel.text = String(format: "Measure: %.2f", measure)
-                if self.bestMeasure ?? Double.greatestFiniteMagnitude > measure {
-                    self.bestMeasure = measure
-                    self.bestLabel.text = String(format: "Best: %.2f", self.bestMeasure!)
+                if self.laplacianButton.checked {
+                    if self.bestMeasure ?? Double.greatestFiniteMagnitude <= measure {
+                        return
+                    }
+                } else {
+                    if self.bestMeasure ?? 0 >= measure {
+                        return
+                    }
                 }
+                self.bestMeasure = measure
+                self.bestLabel.text = String(format: "Best: %.2f", self.bestMeasure!)
             }
         }
         dispatchQt { [self] in
