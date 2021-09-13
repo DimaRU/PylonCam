@@ -41,7 +41,7 @@ class SharedMemory {
                 fatalError()
         }
 
-        ftruncate(sharedFile, Int64(size))
+        ftruncate(sharedFile, size)
         guard
             let buffer = mmap(nil, size, PROT_READ|PROT_WRITE, MAP_SHARED, sharedFile, 0),
             buffer != UnsafeMutableRawPointer(bitPattern: -1) else {

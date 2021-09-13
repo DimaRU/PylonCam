@@ -22,6 +22,7 @@ let package = Package(
                 .product(name: "LoggingSyslog", package: "swift-log-syslog")
             ],
             linkerSettings: [
+                .linkedLibrary("rt", .when(platforms: [.linux])),
                 .linkedFramework("QtWidgets", .when(platforms: [.macOS])),
                 .linkedFramework("QtCore", .when(platforms: [.macOS])),
                 .linkedFramework("QtGui", .when(platforms: [.macOS])),
