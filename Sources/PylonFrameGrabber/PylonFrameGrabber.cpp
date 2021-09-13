@@ -7,6 +7,7 @@
 
 #include <pylon/PylonIncludes.h>
 #include "PylonFrameGrabber.h"
+#include "FrameBufferAllocator.h"
 
 using namespace Pylon;
 using namespace GenApi;
@@ -276,4 +277,10 @@ bool CPylonIsOpen(PylonGrabber  * _Nonnull frameGrabber) {
 bool CPylonIsGrabbing(PylonGrabber  * _Nonnull frameGrabber) {
     CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
     return camera->IsGrabbing();
+}
+
+void CPylonSetBufferAllocator(PylonGrabber * _Nonnull frameGrabber, void * frameBuffer, size_t frameBufferSize) {
+    CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
+    FrameBufferAllocator * allocator = new FrameBufferAllocator(frameBuffer, frameBufferSize);
+    camera->SetBufferFactory(allocator);
 }

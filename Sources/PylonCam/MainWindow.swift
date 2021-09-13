@@ -12,8 +12,9 @@ import PylonFrameGrabber
 import FocusMeasure
 
 class MainWindow: UIMainWindow {
-    let zoomFactor: [Double] = [0.5, 1, 2, 3, 4, 5, 8]
-    var zoomLevel = 1 {
+    private let zoomFactor: [Double] = [0.5, 1, 2, 3, 4, 5, 8]
+    private let bufferCount: Int32 = 5
+    private var zoomLevel = 1 {
         didSet {
             if zoomLevel == 0 {
                 plusButton.enabled = false
@@ -25,12 +26,13 @@ class MainWindow: UIMainWindow {
             }
         }
     }
-    var bestMeasure: Double? = nil
-    var imageWidth = 0
-    var imageHeight = 0
-    var frameGrabber: PylonGrabber
-    let frameGrabberQueue = DispatchQueue(label: "frameGrabber.Queue", qos: .userInitiated)
-    let measureQueue = DispatchQueue(label: "measureFocus.Queue", qos: .userInteractive)
+    private var bestMeasure: Double? = nil
+    private var imageWidth = 0
+    private var imageHeight = 0
+    private var frameGrabber: PylonGrabber
+    private let frameGrabberQueue = DispatchQueue(label: "frameGrabber.Queue", qos: .userInitiated)
+    private let measureQueue = DispatchQueue(label: "measureFocus.Queue", qos: .userInteractive)
+    private var sharedMemory: SharedMemory!
 
     init() {
         PylonInitialize()
@@ -94,10 +96,12 @@ class MainWindow: UIMainWindow {
         print(aoi)
         frameGrabber.setAOI(area: aoi)
         frameGrabber.setAutoAOI(area: aoi)
+        let frameBufferSize = imageWidth * imageHeight * Int(bufferCount)
+        sharedMemory = SharedMemory(size: frameBufferSize)
+        frameGrabber.SetBufferAllocator(frameBuffer: sharedMemory.sharedFrameBuffer, frameBufferSize: frameBufferSize)
     }
 
     func tryConnect() -> Bool {
-        print(frameGrabber.IsPylonDeviceAttached(), frameGrabber.HasOwnership(), frameGrabber.IsOpen())
         if !frameGrabber.IsPylonDeviceAttached() {
             frameGrabber.AttachDevice()
             guard !frameGrabber.errorFlag else {
@@ -112,7 +116,6 @@ class MainWindow: UIMainWindow {
                 return false
             }
         }
-        print(frameGrabber.IsPylonDeviceAttached(), frameGrabber.HasOwnership(), frameGrabber.IsOpen())
         frameGrabber.PrintParams()
         let model = frameGrabber.StringParameter(name: "DeviceModelName")
         statusBar.showMessage(message: String(cString: model, encoding: .utf8)!)
@@ -127,7 +130,7 @@ class MainWindow: UIMainWindow {
             }
             startStopButton.text = "Stop"
             frameGrabberQueue.async { [self] in
-                frameGrabber.GrabFrames(object: Unmanaged.passUnretained(self).toOpaque(), bufferCount: 5, timeout: 500)
+                frameGrabber.GrabFrames(object: Unmanaged.passUnretained(self).toOpaque(), bufferCount: bufferCount, timeout: 500)
                 { object, width, height, frame in
                     let mySelf = Unmanaged<MainWindow>.fromOpaque(object).takeUnretainedValue()
                     mySelf.drawFrame(frame: frame, width: width, height: height)
@@ -169,4 +172,5 @@ class MainWindow: UIMainWindow {
             self.imageLabel.setImage(dmxImage)
         }
     }
+
 }

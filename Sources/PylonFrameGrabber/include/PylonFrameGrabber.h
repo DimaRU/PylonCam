@@ -64,6 +64,9 @@ bool CPylonIsCameraDeviceRemoved(PylonGrabber * _Nonnull frameGrabber) CF_SWIFT_
 bool CPylonHasOwnership(PylonGrabber * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.HasOwnership(self:));
 bool CPylonIsOpen(PylonGrabber * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.IsOpen(self:));
 bool CPylonIsGrabbing(PylonGrabber * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.IsGrabbing(self:));
+void CPylonSetBufferAllocator(PylonGrabber * _Nonnull frameGrabber,
+                              void * frameBuffer,
+                              size_t frameBufferSize) CF_SWIFT_NAME(PylonGrabber.SetBufferAllocator(self:frameBuffer:frameBufferSize:));
 
 #ifdef __cplusplus
 }

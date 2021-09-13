@@ -17,6 +17,7 @@ let package = Package(
                 "Qlift",
                 "PylonFrameGrabber",
                 "FocusMeasure",
+                "DMXWrapper",
                 .product(name: "Backtrace", package: "swift-backtrace", condition: .when(platforms: [.linux])),
                 .product(name: "LoggingSyslog", package: "swift-log-syslog")
             ],
@@ -40,6 +41,7 @@ let package = Package(
             name: "FocusMeasure",
             dependencies: ["COpencv4"]
         ),
+        .target(name: "DMXWrapper"),
         .systemLibrary(name: "CPylon", pkgConfig: "pylon"),
         .systemLibrary(name: "COpencv4", pkgConfig: "opencv4"),
     ],
