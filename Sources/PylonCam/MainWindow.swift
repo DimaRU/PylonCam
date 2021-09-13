@@ -87,18 +87,20 @@ class MainWindow: UIMainWindow {
         let yPart = (area.height) / 3 & ~0xf
         let newWidth = (area.width - xPart * 2) & ~0xf
         let newHeight = (area.height - yPart * 2) & ~0xf
-        let roiArea = frameGrabber.getAutoAOI()
-        print("Auto AOI:", roiArea)
         imageHeight = Int(newHeight)
         imageWidth = Int(newWidth)
         let aoi = Area(offsetX: xPart, offsetY: yPart, width: newWidth, height: newHeight)
-        print("Camera: \(area.width)x\(area.height)")
+        print("Camera capability: \(area.width)x\(area.height)")
         print(aoi)
         frameGrabber.setAOI(area: aoi)
         frameGrabber.setAutoAOI(area: aoi)
         let frameBufferSize = imageWidth * imageHeight * Int(bufferCount)
         sharedMemory = SharedMemory(size: frameBufferSize)
         frameGrabber.SetBufferAllocator(frameBuffer: sharedMemory.sharedFrameBuffer, frameBufferSize: frameBufferSize)
+        let scrollSize = scrollArea.size
+        let labelWidth = scrollSize.width - 5
+        let labelHeight = labelWidth * Int32(imageHeight) / Int32(imageWidth)
+        imageLabel.resize(width: labelWidth, height: labelHeight)
     }
 
     func tryConnect() -> Bool {
