@@ -139,6 +139,7 @@ class MainWindow: UIMainWindow {
         brightnessSlider.minimum = Int32(frameGrabber.IntParameter(name: brigtnessParam, type: .min))
         brightnessSlider.maximum = Int32(frameGrabber.IntParameter(name: brigtnessParam, type: .max))
         brightnessSlider.singleStep = Int32(frameGrabber.IntParameter(name: brigtnessParam, type: .step))
+        brightnessSlider.pageStep = 1
         let value = Int32(frameGrabber.IntParameter(name: brigtnessParam, type: .value))
         brightnessSlider.value = value;
         self.brightnessLabel.text = "Brightness: \(value)"
