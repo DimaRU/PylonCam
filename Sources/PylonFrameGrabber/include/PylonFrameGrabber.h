@@ -33,6 +33,13 @@ typedef struct {
     char stringBuffer[256];
 } PylonGrabber;
 
+typedef NS_CLOSED_ENUM(int, GetParameterType) {
+    value,
+    min,
+    max,
+    step
+};
+
 void CPylonInitialize(void) CF_SWIFT_NAME(PylonInitialize());
 void CPylonTerminate(void) CF_SWIFT_NAME(PylonTerminate());
 
@@ -52,8 +59,10 @@ void CPylonGrabFrames(PylonGrabber * _Nonnull frameGrabber,
                       int timeout,
                       GrabCallback _Nonnull grabCallback) CF_SWIFT_NAME(PylonGrabber.GrabFrames(self:object:bufferCount:timeout:callBack:));
 
-int64_t CPylonIntParameter(PylonGrabber * _Nonnull frameGrabber, const char * _Nonnull name) CF_SWIFT_NAME(PylonGrabber.IntParameter(self:name:));
-double CPylonFloatParameter(PylonGrabber * _Nonnull frameGrabber, const char * _Nonnull name) CF_SWIFT_NAME(PylonGrabber.FloatParameter(self:name:));
+int64_t CPylonIntParameter(PylonGrabber * _Nonnull frameGrabber, const char * _Nonnull name, GetParameterType type) CF_SWIFT_NAME(PylonGrabber.IntParameter(self:name:type:));
+void CPylonSetIntParameter(PylonGrabber *frameGrabber, const char *name, int64_t value) CF_SWIFT_NAME(PylonGrabber.SetIntParameter(self:name:value:));
+double CPylonFloatParameter(PylonGrabber * _Nonnull frameGrabber, const char * _Nonnull name, GetParameterType type) CF_SWIFT_NAME(PylonGrabber.FloatParameter(self:name:type:));
+void CPylonSetFloatParameter(PylonGrabber * _Nonnull frameGrabber, const char * _Nonnull name, double value) CF_SWIFT_NAME(PylonGrabber.SetFloatParameter(self:name:value:));
 const char * _Nonnull CPylonStringParameter(PylonGrabber * _Nonnull frameGrabber, const char * _Nonnull name) CF_SWIFT_NAME(PylonGrabber.StringParameter(self:name:));
 Area CPylonGetAOI(PylonGrabber * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.getAOI(self:));
 Area CPylonGetAutoAOI(PylonGrabber * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.getAutoAOI(self:));

@@ -26,8 +26,8 @@ let package = Package(
                 .linkedFramework("QtWidgets", .when(platforms: [.macOS])),
                 .linkedFramework("QtCore", .when(platforms: [.macOS])),
                 .linkedFramework("QtGui", .when(platforms: [.macOS])),
-                .linkedFramework("Pylon", .when(platforms: [.macOS])),
-                .unsafeFlags(["-rpath", "/Library/Frameworks"], .when(platforms: [.macOS])),
+                .linkedFramework("pylon", .when(platforms: [.macOS])),
+                .unsafeFlags(["-Xlinker", "-rpath", "/Library/Frameworks"], .when(platforms: [.macOS])),
                 .unsafeFlags([
                     "-Xlinker", "-rpath=/opt/pylon/lib",
                     "-Xlinker", "-rpath=/opt/qt5.15/lib",

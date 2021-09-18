@@ -11,6 +11,8 @@ import Logging
 import PylonFrameGrabber
 import FocusMeasure
 
+fileprivate let brigtnessParam = "AutoTargetValue";
+
 class MainWindow: UIMainWindow {
     private let zoomFactor: [Double] = [0.5, 1, 2, 3, 4, 5, 8]
     private let bufferCount: Int32 = 5
@@ -26,6 +28,7 @@ class MainWindow: UIMainWindow {
             }
         }
     }
+
     private var bestMeasure: Double? = nil
     private var imageWidth = 0
     private var imageHeight = 0
@@ -33,6 +36,7 @@ class MainWindow: UIMainWindow {
     private let frameGrabberQueue = DispatchQueue(label: "frameGrabber.Queue", qos: .userInitiated)
     private let measureQueue = DispatchQueue(label: "measureFocus.Queue", qos: .userInteractive)
     private var sharedMemory: SharedMemory!
+    private var savedAOI: Area = Area()
 
     init() {
         PylonInitialize()
@@ -42,6 +46,9 @@ class MainWindow: UIMainWindow {
     }
 
     deinit {
+        if frameGrabber.IsPylonDeviceAttached() {
+            frameGrabber.setAOI(area: savedAOI)
+        }
         frameGrabber.ReleaseCamera()
         PylonTerminate()
     }
@@ -60,6 +67,7 @@ class MainWindow: UIMainWindow {
     private func meashureButtonToggle(_ state: Bool) {
         bestMeasure = nil
     }
+
     private func plusButtonClick() {
         zoomLevel -= 1
         setZoom(zoom: zoomFactor[zoomLevel])
@@ -75,16 +83,16 @@ class MainWindow: UIMainWindow {
         imageLabel.resize(width: Int32(zWidth), height: Int32(zHeight))
     }
 
-    func centerButtonClick() {
+    private func centerButtonClick() {
         let zWidth = Double(imageWidth) / zoomFactor[zoomLevel] / 2
         let zHeight = Double(imageHeight) / zoomFactor[zoomLevel] / 2
         scrollArea.ensureVisible(x: Int32(zWidth), y: Int32(zHeight))
     }
 
-    func setFocusParams() {
+    private func setFocusParams() {
         let area = frameGrabber.getMaxArea()
         let xPart = (area.width / 3) & ~0xf
-        let yPart = (area.height) / 3 & ~0xf
+        let yPart = (area.height / 3) & ~0xf
         let newWidth = (area.width - xPart * 2) & ~0xf
         let newHeight = (area.height - yPart * 2) & ~0xf
         imageHeight = Int(newHeight)
@@ -103,7 +111,7 @@ class MainWindow: UIMainWindow {
         imageLabel.resize(width: labelWidth, height: labelHeight)
     }
 
-    func tryConnect() -> Bool {
+    private func tryConnect() -> Bool {
         if !frameGrabber.IsPylonDeviceAttached() {
             frameGrabber.AttachDevice()
             guard !frameGrabber.errorFlag else {
@@ -118,14 +126,29 @@ class MainWindow: UIMainWindow {
                 return false
             }
         }
+        savedAOI = frameGrabber.getAOI()
         frameGrabber.PrintParams()
         let model = frameGrabber.StringParameter(name: "DeviceModelName")
         statusBar.showMessage(message: String(cString: model, encoding: .utf8)!)
         setFocusParams()
+        setBrigthnessSlider()
         return true
     }
 
-    func startStopButtonClick() {
+    private func setBrigthnessSlider() {
+        brightnessSlider.minimum = Int32(frameGrabber.IntParameter(name: brigtnessParam, type: .min))
+        brightnessSlider.maximum = Int32(frameGrabber.IntParameter(name: brigtnessParam, type: .max))
+        brightnessSlider.singleStep = Int32(frameGrabber.IntParameter(name: brigtnessParam, type: .step))
+        let value = Int32(frameGrabber.IntParameter(name: brigtnessParam, type: .value))
+        brightnessSlider.value = value;
+        self.brightnessLabel.text = "Brightness: \(value)"
+        brightnessSlider.connectValueChanged { value in
+            self.frameGrabber.SetIntParameter(name: brigtnessParam, value: Int64(value))
+            self.brightnessLabel.text = "Brightness: \(value)"
+        }
+    }
+
+    private func startStopButtonClick() {
         if startStopButton.text == "Start" {
             guard tryConnect() else {
                 return
@@ -145,7 +168,7 @@ class MainWindow: UIMainWindow {
         }
     }
 
-    func getMeasureFunc() -> ((_: Int32, _: Int32, _: UnsafeMutableRawPointer) -> Double) {
+    private func getMeasureFunc() -> ((_: Int32, _: Int32, _: UnsafeMutableRawPointer) -> Double) {
         if laplacianButton.checked {
             return laplacianMeasure
         } else if sobelButton.checked {
@@ -156,7 +179,7 @@ class MainWindow: UIMainWindow {
         return laplacianMeasure
     }
 
-    func drawFrame(frame: UnsafeMutableRawPointer, width: Int32, height: Int32) {
+    private func drawFrame(frame: UnsafeMutableRawPointer, width: Int32, height: Int32) {
         measureQueue.async {
             let measureFunc = self.getMeasureFunc()
             let measure = measureFunc(width, height, frame)
@@ -181,5 +204,4 @@ class MainWindow: UIMainWindow {
             self.imageLabel.setImage(dmxImage)
         }
     }
-
 }

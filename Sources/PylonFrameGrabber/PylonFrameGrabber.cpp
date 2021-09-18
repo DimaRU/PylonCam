@@ -95,22 +95,46 @@ void CPylonDestroyDevice(PylonGrabber *frameGrabber) {
     camera->DestroyDevice();
  }
 
-int64_t CPylonIntParameter(PylonGrabber *frameGrabber, const char *name)
+int64_t CPylonIntParameter(PylonGrabber *frameGrabber, const char *name, GetParameterType type)
 {
     CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
     frameGrabber->errorFlag = false;
     INodeMap& nodemap = camera->GetNodeMap();
-    int64_t value = CIntegerParameter( nodemap, name ).GetValue();
-    return value;
+    switch (type) {
+        case GetParameterType::value: return CIntegerParameter( nodemap, name ).GetValue();
+        case GetParameterType::min:   return CIntegerParameter( nodemap, name ).GetMin();
+        case GetParameterType::max:   return CIntegerParameter( nodemap, name ).GetMax();
+        case GetParameterType::step:  return CIntegerParameter( nodemap, name ).GetInc();
+    }
 }
 
-double CPylonFloatParameter(PylonGrabber *frameGrabber, const char *name)
+void CPylonSetIntParameter(PylonGrabber *frameGrabber, const char *name, int64_t value)
 {
     CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
     frameGrabber->errorFlag = false;
     INodeMap& nodemap = camera->GetNodeMap();
-    double value = CFloatParameter( nodemap, name ).GetValue();
-    return value;
+    CIntegerParameter( nodemap, name ).SetValue(value);
+}
+
+double CPylonFloatParameter(PylonGrabber *frameGrabber, const char *name, GetParameterType type)
+{
+    CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
+    frameGrabber->errorFlag = false;
+    INodeMap& nodemap = camera->GetNodeMap();
+    switch (type) {
+        case GetParameterType::value: return CFloatParameter( nodemap, name ).GetValue();
+        case GetParameterType::min:   return CFloatParameter( nodemap, name ).GetMin();
+        case GetParameterType::max:   return CFloatParameter( nodemap, name ).GetMax();
+        case GetParameterType::step:  return CFloatParameter( nodemap, name ).GetInc();
+    }
+}
+
+void CPylonSetFloatParameter(PylonGrabber *frameGrabber, const char *name, double value)
+{
+    CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
+    frameGrabber->errorFlag = false;
+    INodeMap& nodemap = camera->GetNodeMap();
+    CFloatParameter( nodemap, name ).SetValue(value);
 }
 
 const char *CPylonStringParameter(PylonGrabber *frameGrabber, const char *name)

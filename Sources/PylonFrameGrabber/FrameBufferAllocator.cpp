@@ -38,7 +38,6 @@ void FrameBufferAllocator::AllocateBuffer( size_t bufferSize, void** pCreatedBuf
     // ptrGrabResult->GetBufferContext();
     bufferContext = frameOffset;
     frameOffset += bufferSize;
-    std::cout << "Created buffer " << bufferContext << ", " << bufferSize << std::endl;
 }
 // Frees a previously allocated buffer.
 // Warning: This method can be called by different threads.

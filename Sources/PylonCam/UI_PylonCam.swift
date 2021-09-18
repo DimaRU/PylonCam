@@ -32,6 +32,9 @@ class UIMainWindow: QMainWindow {
     var startStopButton: QPushButton!
     var verticalSpacer_3: QSpacerItem!
     var centerButton: QPushButton!
+    var verticalSpacer_4: QSpacerItem!
+    var brightnessSlider: QSlider!
+    var brightnessLabel: QLabel!
     var verticalSpacer: QSpacerItem!
     var horizontalLayout_2: QHBoxLayout!
     var plusButton: QPushButton!
@@ -48,6 +51,11 @@ background: #284465;
 """
         centralwidget = QWidget(parent: self)
         centralwidget.name = "centralwidget"
+        centralwidget.styleSheet = """
+font-family: Rubik;
+font-style: normal;
+color: #FFFFFF;
+"""
         verticalLayout_3 = QVBoxLayout(parent: centralwidget)
         verticalLayout_3.contentsMargins = QMargins(left: 20, top: 20, right: 0, bottom: 0)
         verticalLayout_3.spacing = 20
@@ -275,6 +283,42 @@ border-radius: 8px;
         centerButton.text = "Center"
         centerButton.isFlat = false
         verticalLayout.add(widget: centerButton)
+        verticalSpacer_4 = QSpacerItem(width: 20, height: 40, horizontalPolicy: .Minimum, verticalPolicy: .Expanding)
+        verticalLayout.add(item: verticalSpacer_4)
+        brightnessSlider = QSlider(parent: frameButtons)
+        brightnessSlider.name = "brightnessSlider"
+        brightnessSlider.sizePolicy = QSizePolicy(horizontal: .Expanding, vertical: .Expanding)
+        brightnessSlider.autoFillBackground = false
+        brightnessSlider.styleSheet = """
+QSlider::groove:horizontal {
+    border: 0px solid #999999;
+    height: 10px; /* the groove expands to the size of the slider by default. by giving it a height, it has a fixed size */
+    background: #0F9FD6;
+    margin: 2px 0;
+}
+
+QSlider::handle:horizontal {
+    background: white;
+    border: 1px solid #5c5c5c;
+    width: 18px;
+    margin: -8px 0;
+    border-radius: 10px;
+}
+"""
+        brightnessSlider.minimum = -1
+        brightnessSlider.orientation = .Horizontal
+        brightnessSlider.invertedAppearance = false
+        brightnessSlider.invertedControls = false
+        verticalLayout.add(widget: brightnessSlider)
+        brightnessLabel = QLabel(parent: frameButtons)
+        brightnessLabel.name = "brightnessLabel"
+        brightnessLabel.styleSheet = """
+font-weight: bold;
+font-size: 18px;
+"""
+        brightnessLabel.text = "Brightness"
+        brightnessLabel.alignment = .AlignCenter
+        verticalLayout.add(widget: brightnessLabel)
         verticalSpacer = QSpacerItem(width: 20, height: 40, horizontalPolicy: .Minimum, verticalPolicy: .Expanding)
         verticalLayout.add(item: verticalSpacer)
         horizontalLayout_2 = QHBoxLayout(parent: nil)
@@ -312,7 +356,7 @@ border-radius: 8px;
         horizontalLayout_4.add(widget: frameButtons)
         verticalLayout_3.add(layout: horizontalLayout_4)
         self.centralWidget = centralwidget
-        statusBar = QStatusBar(parent: self)
+        let statusBar = QStatusBar(parent: self)
         statusBar.name = "statusBar"
         statusBar.styleSheet = """
 font-family: Rubik;
@@ -321,5 +365,6 @@ font-weight: 500;
 font-size: 14px;
 color: white;
 """
+        self.statusBar = statusBar
     }
 }

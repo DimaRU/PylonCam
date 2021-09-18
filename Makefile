@@ -1,4 +1,4 @@
-.PHONY : all
+.PHONY : all clean
 .SUFFIXES: .swift .ui
 
 UIDIR = ./
@@ -12,3 +12,6 @@ $(SWIFTDIR)/%.swift: $(UIDIR)/%.ui
 	$(UIC) $< $@
 
 all:	${SWIFT}
+
+clean:  $(SWIFT)
+	rm -rf $<
