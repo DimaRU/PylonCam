@@ -54,27 +54,31 @@ class MainWindow: UIMainWindow {
     }
 
     private func connectButtons() {
-        plusButton.connectClicked(to: plusButtonClick)
-        minusButton.connectClicked(to: minusButtonClick)
-        startStopButton.connectClicked(to: startStopButtonClick)
-        centerButton.connectClicked(to: centerButtonClick)
-        laplacianButton.connectToggled(to: meashureButtonToggle)
-        sobelButton.connectToggled(to: meashureButtonToggle)
-        varianceButton.connectToggled(to: meashureButtonToggle)
+        plusButton.connectClicked { [unowned self] in
+            zoomLevel -= 1
+            setZoom(zoom: zoomFactor[zoomLevel])
+        }
+        minusButton.connectClicked { [unowned self] in
+            zoomLevel += 1
+            setZoom(zoom: zoomFactor[zoomLevel])
+        }
+        laplacianButton.connectToggled { [unowned self] _ in
+            bestMeasure = nil
+        }
+        sobelButton.connectToggled { [unowned self] _ in
+            bestMeasure = nil
+        }
+        varianceButton.connectToggled { [unowned self] _ in
+            bestMeasure = nil
+        }
+
+        startStopButton.connectClicked { [unowned self] in startStopButtonClick() }
+        centerButton.connectClicked{ [unowned self] in centerButtonClick() }
         startStopButton.text = "Start"
     }
 
-    private func meashureButtonToggle(_ state: Bool) {
-        bestMeasure = nil
-    }
-
-    private func plusButtonClick() {
-        zoomLevel -= 1
-        setZoom(zoom: zoomFactor[zoomLevel])
-    }
-    private func minusButtonClick() {
-        zoomLevel += 1
-        setZoom(zoom: zoomFactor[zoomLevel])
+    override func closeEvent(event: QCloseEvent) {
+        self.frameGrabber.GrabStop()
     }
 
     private func setZoom(zoom: Double) {
@@ -143,7 +147,7 @@ class MainWindow: UIMainWindow {
         let value = Int32(frameGrabber.IntParameter(name: brigtnessParam, type: .value))
         brightnessSlider.value = value;
         self.brightnessLabel.text = "Brightness: \(value)"
-        brightnessSlider.connectValueChanged { value in
+        brightnessSlider.connectValueChanged { [unowned self] value in
             self.frameGrabber.SetIntParameter(name: brigtnessParam, value: Int64(value))
             self.brightnessLabel.text = "Brightness: \(value)"
         }
@@ -155,7 +159,7 @@ class MainWindow: UIMainWindow {
                 return
             }
             startStopButton.text = "Stop"
-            frameGrabberQueue.async { [self] in
+            frameGrabberQueue.async { [unowned self] in
                 frameGrabber.GrabFrames(object: Unmanaged.passUnretained(self).toOpaque(), bufferCount: bufferCount, timeout: 500)
                 { object, width, height, frame in
                     let mySelf = Unmanaged<MainWindow>.fromOpaque(object).takeUnretainedValue()
@@ -165,6 +169,9 @@ class MainWindow: UIMainWindow {
         } else {
             startStopButton.text = "Start"
             self.frameGrabber.GrabStop()
+            if frameGrabber.IsPylonDeviceAttached() {
+                frameGrabber.setAOI(area: savedAOI)
+            }
             self.frameGrabber.cameraStop()
         }
     }
@@ -199,7 +206,8 @@ class MainWindow: UIMainWindow {
                 self.bestLabel.text = String(format: "Best: %.2f", self.bestMeasure!)
             }
         }
-        dispatchQt { [self] in
+        dispatchQt { [weak self] in
+            guard let self = self else { return }
             // Draw picture
             let dmxImage = QImage(data: frame, width: Int(width), height: Int(height), format: .Format_Grayscale8)
             self.imageLabel.setImage(dmxImage)

@@ -23,7 +23,6 @@ void CPylonTerminate(void) {
 
 void CPylonReleaseCamera(PylonGrabber *frameGrabber) {
     delete (CInstantCamera *)frameGrabber->camera;
-    delete frameGrabber;
 }
 
 static void storeString(PylonGrabber *frameGrabber, const char *string) {
