@@ -17,10 +17,11 @@ let package = Package(
                 "Qlift",
                 "PylonFrameGrabber",
                 "FocusMeasure",
-                "DMXWrapper",
+                "CameraSharedMem",
                 .product(name: "Backtrace", package: "swift-backtrace", condition: .when(platforms: [.linux])),
                 .product(name: "LoggingSyslog", package: "swift-log-syslog")
             ],
+            cSettings: [.headerSearchPath("../../Common")],
             linkerSettings: [
                 .linkedLibrary("rt", .when(platforms: [.linux])),
                 .linkedFramework("QtWidgets", .when(platforms: [.macOS])),
@@ -34,17 +35,12 @@ let package = Package(
                 ], .when(platforms: [.linux])),
             ]
         ),
-        .target(
-            name: "PylonFrameGrabber",
-            dependencies: ["CPylon"]
-        ),
-        .target(
-            name: "FocusMeasure",
-            dependencies: ["COpencv4"]
-        ),
-        .target(name: "DMXWrapper"),
+        .target(name: "PylonFrameGrabber", dependencies: ["CPylon"], cSettings: [.headerSearchPath("../../Common")]),
+        .target(name: "FocusMeasure", dependencies: ["COpencv4"]),
+        .target(name: "CameraSharedMem", cSettings: [.headerSearchPath("../../Common")]),
         .systemLibrary(name: "CPylon", pkgConfig: "pylon"),
         .systemLibrary(name: "COpencv4", pkgConfig: "opencv4"),
     ],
+    cLanguageStandard: .c99,
     cxxLanguageStandard: .cxx1z
 )

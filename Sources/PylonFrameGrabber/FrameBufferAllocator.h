@@ -18,7 +18,7 @@ public:
     virtual void DestroyBufferFactory();
 
 protected:
-    size_t frameOffset;
-    void * frameBuffer;
-    size_t frameBufferSize;
+    void *  frameBuffer;
+    size_t  frameBufferSize;
+    int     context;
 };

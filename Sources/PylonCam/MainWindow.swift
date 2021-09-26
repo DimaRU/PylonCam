@@ -35,7 +35,7 @@ class MainWindow: UIMainWindow {
     private var frameGrabber: PylonGrabber
     private let frameGrabberQueue = DispatchQueue(label: "frameGrabber.Queue", qos: .userInitiated)
     private let measureQueue = DispatchQueue(label: "measureFocus.Queue", qos: .userInteractive)
-    private var sharedMemory: SharedMemory!
+    private var sharedMemory: SharedMemory?
     private var savedAOI: Area = Area()
 
     init() {
@@ -103,12 +103,14 @@ class MainWindow: UIMainWindow {
         imageWidth = Int(newWidth)
         let aoi = Area(offsetX: xPart, offsetY: yPart, width: newWidth, height: newHeight)
         print("Camera capability: \(area.width)x\(area.height)")
-        print(aoi)
+        let model = String(cString: frameGrabber.StringParameter(name: "DeviceModelName"), encoding: .utf8)!
+        statusBar.showMessage(message: " \(model): \(aoi)")
         frameGrabber.setAOI(area: aoi)
         frameGrabber.setAutoAOI(area: aoi)
-        let frameBufferSize = imageWidth * imageHeight * Int(bufferCount)
-        sharedMemory = SharedMemory(size: frameBufferSize)
-        frameGrabber.SetBufferAllocator(frameBuffer: sharedMemory.sharedFrameBuffer, frameBufferSize: frameBufferSize)
+        sharedMemory = SharedMemory(width: imageWidth, height: imageHeight, bufferCount: Int(bufferCount))
+        if let sharedMemory = sharedMemory {
+            frameGrabber.SetBufferAllocator(frameBuffer: sharedMemory.sharedFrameBuffer, frameBufferSize: sharedMemory.bufferSize)
+        }
         let scrollSize = scrollArea.size
         let labelWidth = scrollSize.width - 5
         let labelHeight = labelWidth * Int32(imageHeight) / Int32(imageWidth)
@@ -132,8 +134,6 @@ class MainWindow: UIMainWindow {
         }
         savedAOI = frameGrabber.getAOI()
         frameGrabber.PrintParams()
-        let model = frameGrabber.StringParameter(name: "DeviceModelName")
-        statusBar.showMessage(message: String(cString: model, encoding: .utf8)!)
         setFocusParams()
         setBrigthnessSlider()
         return true
@@ -161,7 +161,7 @@ class MainWindow: UIMainWindow {
             startStopButton.text = "Stop"
             frameGrabberQueue.async { [unowned self] in
                 frameGrabber.GrabFrames(object: Unmanaged.passUnretained(self).toOpaque(), bufferCount: bufferCount, timeout: 500)
-                { object, width, height, frame in
+                { object, width, height, frame, context in
                     let mySelf = Unmanaged<MainWindow>.fromOpaque(object).takeUnretainedValue()
                     mySelf.drawFrame(frame: frame, width: width, height: height)
                 }
@@ -173,6 +173,7 @@ class MainWindow: UIMainWindow {
                 frameGrabber.setAOI(area: savedAOI)
             }
             self.frameGrabber.cameraStop()
+            sharedMemory = nil
         }
     }
 

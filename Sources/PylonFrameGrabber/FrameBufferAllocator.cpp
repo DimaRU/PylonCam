@@ -7,6 +7,7 @@
 
 #include <pylon/PylonIncludes.h>
 #include "FrameBufferAllocator.h"
+#include "SharedData.h"
 
 using namespace Pylon;
 
@@ -14,7 +15,7 @@ FrameBufferAllocator::FrameBufferAllocator(void * frameBuffer, size_t frameBuffe
 {
     this->frameBuffer = frameBuffer;
     this->frameBufferSize = frameBufferSize;
-    this->frameOffset = 0;
+    this->context = 0;
 }
 
 FrameBufferAllocator::~FrameBufferAllocator()
@@ -25,20 +26,21 @@ FrameBufferAllocator::~FrameBufferAllocator()
 // Warning: This method can be called by different threads.
 void FrameBufferAllocator::AllocateBuffer( size_t bufferSize, void** pCreatedBuffer, intptr_t& bufferContext )
 {
-    if (frameOffset + bufferSize > frameBufferSize)
-    {
-        *pCreatedBuffer = NULL;
-        return;
-    }
+    CameraSharedMem *header = (CameraSharedMem *)frameBuffer;
     // Allocate buffer for pixel data.
-    *pCreatedBuffer = frameBuffer;
+    *pCreatedBuffer = header->frameBufferAddress[context];
     // The context information is never changed by the Instant Camera and can be used
     // by the buffer factory to manage the buffers.
     // The context information can be retrieved from a grab result by calling
-    // ptrGrabResult->GetBufferContext();
-    bufferContext = frameOffset;
-    frameOffset += bufferSize;
+    bufferContext = context;
+
+    context++;
+    header->frameBufferAddress[context] = (uint8_t *)*pCreatedBuffer + bufferSize;
+    if ( header->frameBufferAddress[context] > (uint8_t *)frameBuffer + frameBufferSize) {
+        *pCreatedBuffer = NULL;
+    }
 }
+
 // Frees a previously allocated buffer.
 // Warning: This method can be called by different threads.
 void FrameBufferAllocator::FreeBuffer( void* pCreatedBuffer, intptr_t bufferContext )

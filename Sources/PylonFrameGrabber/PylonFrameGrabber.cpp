@@ -8,10 +8,10 @@
 #include <pylon/PylonIncludes.h>
 #include "PylonFrameGrabber.h"
 #include "FrameBufferAllocator.h"
+#include "CPylonImageEventHandler.h"
 
 using namespace Pylon;
 using namespace GenApi;
-using namespace std;
 
 void CPylonInitialize(void) {
     PylonInitialize();
@@ -47,7 +47,6 @@ void CPylonAttachDevice(PylonGrabber *frameGrabber) {
     try
     {
         IPylonDevice* device = CTlFactory::GetInstance().CreateFirstDevice();
-        std::cout << device->GetDeviceInfo().GetModelName() << std::endl;
         camera->Attach(device);
     }
     catch (const GenericException& e)
@@ -153,15 +152,15 @@ void CPylonPrintParams(PylonGrabber *frameGrabber) {
     {
         INodeMap& nodemap = camera->GetNodeMap();
 
-        cout << "Camera Device Information" << endl
-            << "=========================" << endl;
-        cout << "Vendor           : " << CStringParameter( nodemap, "DeviceVendorName" ).GetValue() << endl;
-        cout << "Model            : " << CStringParameter( nodemap, "DeviceModelName" ).GetValue() << endl;
-        cout << "Firmware version : " << CStringParameter( nodemap, "DeviceFirmwareVersion" ).GetValue() << endl << endl;
+        std::cout << "Camera Device Information" << std::endl
+            << "=========================" << std::endl;
+        std::cout << "Vendor           : " << CStringParameter( nodemap, "DeviceVendorName" ).GetValue() << std::endl;
+        std::cout << "Model            : " << CStringParameter( nodemap, "DeviceModelName" ).GetValue() << std::endl;
+        std::cout << "Firmware version : " << CStringParameter( nodemap, "DeviceFirmwareVersion" ).GetValue() << std::endl << std::endl;
     }
     catch (const GenericException& e)
     {
-        cerr << "CPylon Error: " << e.GetDescription() << endl;
+        std::cerr << "CPylon Error: " << e.GetDescription() << std::endl;
     }
 }
 
@@ -191,15 +190,16 @@ void CPylonGrabFrames(PylonGrabber *frameGrabber,
 
             if (!ptrGrabResult->GrabSucceeded())
             {
-                cerr << "Error: " << std::hex << ptrGrabResult->GetErrorCode() << std::dec << " " << ptrGrabResult->GetErrorDescription() << endl;
+                std::cerr << "Error: " << std::hex << ptrGrabResult->GetErrorCode() << std::dec << " " << ptrGrabResult->GetErrorDescription() << std::endl;
                 continue;
             }
 
             int width = ptrGrabResult->GetWidth();
             int height = ptrGrabResult->GetHeight();
             auto pImageBuffer = ptrGrabResult->GetBuffer();
+            int context = ptrGrabResult->GetBufferContext();
 
-            grabCallback(object, width, height, pImageBuffer);
+            grabCallback(object, width, height, pImageBuffer, context);
         }
     }
     catch (const GenericException& e)
@@ -306,4 +306,44 @@ void CPylonSetBufferAllocator(PylonGrabber * _Nonnull frameGrabber, void * frame
     CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
     FrameBufferAllocator * allocator = new FrameBufferAllocator(frameBuffer, frameBufferSize);
     camera->SetBufferFactory(allocator);
+}
+
+void CPylonSetSoftwareTrigger(PylonGrabber *frameGrabber,
+                              const void * _Nonnull object,
+                              int bufferCount,
+                              GrabCallback _Nonnull grabCallback) {
+    CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
+    frameGrabber->errorFlag = false;
+
+    try
+    {
+        camera->MaxNumBuffer = bufferCount;
+        camera->RegisterConfiguration( new CSoftwareTriggerConfiguration, RegistrationMode_ReplaceAll, Cleanup_Delete );
+        auto eventHandler = new CPylonImageEventHandler(object, grabCallback);
+        camera->RegisterImageEventHandler( eventHandler, RegistrationMode_Append, Cleanup_Delete );
+        camera->StartGrabbing( GrabStrategy_LatestImages );
+    }
+    catch (const GenericException& e)
+    {
+        storeString(frameGrabber, e.GetDescription());
+    }
+}
+
+void CPylonSoftwareTrigger(PylonGrabber *frameGrabber,
+                           int timeout) {
+    CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
+    frameGrabber->errorFlag = false;
+
+    try
+    {
+        if (camera->WaitForFrameTriggerReady( timeout, TimeoutHandling_ThrowException ))
+        {
+            camera->ExecuteSoftwareTrigger();
+        }
+    }
+    catch (const GenericException& e)
+    {
+        if (!camera->IsGrabbing()) return;
+        storeString(frameGrabber, e.GetDescription());
+    }
 }
