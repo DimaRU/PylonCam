@@ -21,7 +21,7 @@ let package = Package(
                 .product(name: "Backtrace", package: "swift-backtrace", condition: .when(platforms: [.linux])),
                 .product(name: "LoggingSyslog", package: "swift-log-syslog")
             ],
-            cSettings: [.headerSearchPath("../../Common")],
+            cSettings: [.headerSearchPath("../../include")],
             linkerSettings: [
                 .linkedLibrary("rt", .when(platforms: [.linux])),
                 .linkedFramework("QtWidgets", .when(platforms: [.macOS])),
@@ -35,9 +35,9 @@ let package = Package(
                 ], .when(platforms: [.linux])),
             ]
         ),
-        .target(name: "PylonFrameGrabber", dependencies: ["CPylon"], cSettings: [.headerSearchPath("../../Common")]),
+        .target(name: "CameraSharedMem", cSettings: [.headerSearchPath("../../include")]),
+        .target(name: "PylonFrameGrabber", dependencies: ["CPylon"], cSettings: [.headerSearchPath("../../include")]),
         .target(name: "FocusMeasure", dependencies: ["COpencv4"]),
-        .target(name: "CameraSharedMem", cSettings: [.headerSearchPath("../../Common")]),
         .systemLibrary(name: "CPylon", pkgConfig: "pylon"),
         .systemLibrary(name: "COpencv4", pkgConfig: "opencv4"),
     ],

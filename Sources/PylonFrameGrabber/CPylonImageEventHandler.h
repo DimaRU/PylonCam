@@ -18,4 +18,3 @@ public:
     virtual void OnImagesSkipped( CInstantCamera& camera, size_t countOfSkippedImages );
     virtual void OnImageGrabbed( CInstantCamera& camera, const CGrabResultPtr& ptrGrabResult );
 };
-

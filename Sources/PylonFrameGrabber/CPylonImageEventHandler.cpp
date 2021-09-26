@@ -18,13 +18,14 @@ CPylonImageEventHandler::CPylonImageEventHandler(const void * object, GrabCallba
 
 void CPylonImageEventHandler::OnImagesSkipped( CInstantCamera& camera, size_t countOfSkippedImages )
 {
-    std::cerr << countOfSkippedImages << " images have been skipped." << std::endl;
+    grabCallback(object, 0, 0, nullptr, countOfSkippedImages);
 }
 
 void CPylonImageEventHandler::OnImageGrabbed( CInstantCamera& camera, const CGrabResultPtr& ptrGrabResult )
 {
     if (!ptrGrabResult->GrabSucceeded())
     {
+        grabCallback(object, 1, 0, nullptr, ptrGrabResult->GetErrorCode());
         std::cerr << "Error: " << std::hex << ptrGrabResult->GetErrorCode() << std::dec << " " << ptrGrabResult->GetErrorDescription() << std::endl;
         return;
     }

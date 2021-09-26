@@ -159,13 +159,7 @@ class MainWindow: UIMainWindow {
                 return
             }
             startStopButton.text = "Stop"
-            frameGrabberQueue.async { [unowned self] in
-                frameGrabber.GrabFrames(object: Unmanaged.passUnretained(self).toOpaque(), timeout: 500)
-                { object, width, height, frame, context in
-                    let mySelf = Unmanaged<MainWindow>.fromOpaque(object).takeUnretainedValue()
-                    mySelf.drawFrame(frame: frame, width: width, height: height)
-                }
-            }
+            grabFrames()
         } else {
             startStopButton.text = "Start"
             self.frameGrabber.GrabStop()
@@ -175,6 +169,18 @@ class MainWindow: UIMainWindow {
             self.frameGrabber.cameraStop()
             sharedMemory = nil
         }
+    }
+
+    private func grabFrames() {
+        frameGrabber.SetSoftwareTrigger(object: Unmanaged.passUnretained(self).toOpaque())
+        { object, width, height, frame, context in
+            let mySelf = Unmanaged<MainWindow>.fromOpaque(object).takeUnretainedValue()
+            mySelf.frameGrabber.ExecuteSoftwareTrigger()
+            guard let frame = frame else { return }
+            mySelf.drawFrame(frame: frame, width: width, height: height)
+        }
+        frameGrabber.WaitForFrameTriggerReady(timeout: 1000)
+        frameGrabber.ExecuteSoftwareTrigger()
     }
 
     private func getMeasureFunc() -> ((_: Int32, _: Int32, _: UnsafeMutableRawPointer) -> Double) {

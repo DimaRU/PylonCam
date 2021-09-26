@@ -14,7 +14,7 @@
 
 #pragma clang assume_nonnull begin
 
-typedef void (*GrabCallback)(const void *object, int width, int height, void * _Nonnull frame, int context);
+typedef void (*GrabCallback)(const void *object, int width, int height, void * _Nullable frame, int context);
 
 #ifdef __cplusplus
 extern "C" {
@@ -78,9 +78,8 @@ void CPylonSetBufferAllocator(PylonGrabber * _Nonnull frameGrabber,
                               int bufferCount) CF_SWIFT_NAME(PylonGrabber.SetBufferAllocator(self:frameBuffer:frameBufferSize:bufferCount:));
 void CPylonSetSoftwareTrigger(PylonGrabber *frameGrabber,
                               const void * _Nonnull object,
-                              GrabCallback _Nonnull grabCallback,
-                              int bufferCount) CF_SWIFT_NAME(PylonGrabber.SetSoftwareTrigger(self:object:callBack:));
-void CPylonSoftwareTrigger(PylonGrabber *frameGrabber, int timeout) CF_SWIFT_NAME(PylonGrabber.GrabFrames(self:timeout:));
+                              GrabCallback _Nonnull grabCallback) CF_SWIFT_NAME(PylonGrabber.SetSoftwareTrigger(self:object:callBack:));
+bool CPylonWaitForFrameTriggerReady(PylonGrabber *frameGrabber, int timeout) CF_SWIFT_NAME(PylonGrabber.WaitForFrameTriggerReady(self:timeout:));
 
 #ifdef __cplusplus
 }
