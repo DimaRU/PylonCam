@@ -172,7 +172,6 @@ void CPylonGrabStop(PylonGrabber *frameGrabber) {
 
 void CPylonGrabFrames(PylonGrabber *frameGrabber,
                       const void * _Nonnull object,
-                      int bufferCount,
                       int timeout,
                       GrabCallback _Nonnull grabCallback) {
     CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
@@ -180,7 +179,6 @@ void CPylonGrabFrames(PylonGrabber *frameGrabber,
 
     try
     {
-        camera->MaxNumBuffer = bufferCount;
         camera->StartGrabbing( GrabStrategy_LatestImages );
         CGrabResultPtr ptrGrabResult;
 
@@ -302,22 +300,21 @@ bool CPylonIsGrabbing(PylonGrabber  * _Nonnull frameGrabber) {
     return camera->IsGrabbing();
 }
 
-void CPylonSetBufferAllocator(PylonGrabber * _Nonnull frameGrabber, void * frameBuffer, size_t frameBufferSize) {
+void CPylonSetBufferAllocator(PylonGrabber * _Nonnull frameGrabber, void * frameBuffer, size_t frameBufferSize, int bufferCount) {
     CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
     FrameBufferAllocator * allocator = new FrameBufferAllocator(frameBuffer, frameBufferSize);
     camera->SetBufferFactory(allocator);
+    camera->MaxNumBuffer = bufferCount;
 }
 
 void CPylonSetSoftwareTrigger(PylonGrabber *frameGrabber,
                               const void * _Nonnull object,
-                              int bufferCount,
                               GrabCallback _Nonnull grabCallback) {
     CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
     frameGrabber->errorFlag = false;
 
     try
     {
-        camera->MaxNumBuffer = bufferCount;
         camera->RegisterConfiguration( new CSoftwareTriggerConfiguration, RegistrationMode_ReplaceAll, Cleanup_Delete );
         auto eventHandler = new CPylonImageEventHandler(object, grabCallback);
         camera->RegisterImageEventHandler( eventHandler, RegistrationMode_Append, Cleanup_Delete );
@@ -329,8 +326,7 @@ void CPylonSetSoftwareTrigger(PylonGrabber *frameGrabber,
     }
 }
 
-void CPylonSoftwareTrigger(PylonGrabber *frameGrabber,
-                           int timeout) {
+void CPylonSoftwareTrigger(PylonGrabber *frameGrabber, int timeout) {
     CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
     frameGrabber->errorFlag = false;
 

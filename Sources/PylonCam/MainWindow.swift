@@ -109,7 +109,7 @@ class MainWindow: UIMainWindow {
         frameGrabber.setAutoAOI(area: aoi)
         sharedMemory = SharedMemory(width: imageWidth, height: imageHeight, bufferCount: Int(bufferCount))
         if let sharedMemory = sharedMemory {
-            frameGrabber.SetBufferAllocator(frameBuffer: sharedMemory.sharedFrameBuffer, frameBufferSize: sharedMemory.bufferSize)
+            frameGrabber.SetBufferAllocator(frameBuffer: sharedMemory.sharedFrameBuffer, frameBufferSize: sharedMemory.bufferSize, bufferCount: bufferCount)
         }
         let scrollSize = scrollArea.size
         let labelWidth = scrollSize.width - 5
@@ -160,7 +160,7 @@ class MainWindow: UIMainWindow {
             }
             startStopButton.text = "Stop"
             frameGrabberQueue.async { [unowned self] in
-                frameGrabber.GrabFrames(object: Unmanaged.passUnretained(self).toOpaque(), bufferCount: bufferCount, timeout: 500)
+                frameGrabber.GrabFrames(object: Unmanaged.passUnretained(self).toOpaque(), timeout: 500)
                 { object, width, height, frame, context in
                     let mySelf = Unmanaged<MainWindow>.fromOpaque(object).takeUnretainedValue()
                     mySelf.drawFrame(frame: frame, width: width, height: height)

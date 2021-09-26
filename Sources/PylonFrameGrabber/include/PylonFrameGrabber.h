@@ -55,10 +55,8 @@ void CPylonCameraStart(PylonGrabber * _Nonnull frameGrabber) CF_SWIFT_NAME(Pylon
 void CPylonCameraStop(PylonGrabber * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.cameraStop(self:));
 void CPylonGrabFrames(PylonGrabber * _Nonnull frameGrabber,
                       const void * _Nonnull object,
-                      int bufferCount,
                       int timeout,
-                      GrabCallback _Nonnull grabCallback) CF_SWIFT_NAME(PylonGrabber.GrabFrames(self:object:bufferCount:timeout:callBack:));
-
+                      GrabCallback _Nonnull grabCallback) CF_SWIFT_NAME(PylonGrabber.GrabFrames(self:object:timeout:callBack:));
 int64_t CPylonIntParameter(PylonGrabber * _Nonnull frameGrabber, const char * _Nonnull name, GetParameterType type) CF_SWIFT_NAME(PylonGrabber.IntParameter(self:name:type:));
 void CPylonSetIntParameter(PylonGrabber *frameGrabber, const char *name, int64_t value) CF_SWIFT_NAME(PylonGrabber.SetIntParameter(self:name:value:));
 double CPylonFloatParameter(PylonGrabber * _Nonnull frameGrabber, const char * _Nonnull name, GetParameterType type) CF_SWIFT_NAME(PylonGrabber.FloatParameter(self:name:type:));
@@ -76,7 +74,13 @@ bool CPylonIsOpen(PylonGrabber * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabb
 bool CPylonIsGrabbing(PylonGrabber * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.IsGrabbing(self:));
 void CPylonSetBufferAllocator(PylonGrabber * _Nonnull frameGrabber,
                               void * frameBuffer,
-                              size_t frameBufferSize) CF_SWIFT_NAME(PylonGrabber.SetBufferAllocator(self:frameBuffer:frameBufferSize:));
+                              size_t frameBufferSize,
+                              int bufferCount) CF_SWIFT_NAME(PylonGrabber.SetBufferAllocator(self:frameBuffer:frameBufferSize:bufferCount:));
+void CPylonSetSoftwareTrigger(PylonGrabber *frameGrabber,
+                              const void * _Nonnull object,
+                              GrabCallback _Nonnull grabCallback,
+                              int bufferCount) CF_SWIFT_NAME(PylonGrabber.SetSoftwareTrigger(self:object:callBack:));
+void CPylonSoftwareTrigger(PylonGrabber *frameGrabber, int timeout) CF_SWIFT_NAME(PylonGrabber.GrabFrames(self:timeout:));
 
 #ifdef __cplusplus
 }
