@@ -14,8 +14,6 @@
 
 #pragma clang assume_nonnull begin
 
-typedef void (*GrabCallback)(const void *object, int width, int height, void * _Nullable frame, int context);
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -27,7 +25,7 @@ typedef struct {
     int64_t height;
 } Area;
 
-typedef struct {
+typedef struct _PylonGrabber {
     const void * _Nonnull camera;
     bool errorFlag;
     char stringBuffer[256];
@@ -39,6 +37,28 @@ typedef NS_CLOSED_ENUM(int, GetParameterType) {
     max,
     step
 };
+
+typedef NS_CLOSED_ENUM(int, PylonCameraEvent) {
+	cameraAttach,
+	cameraAttached,
+	cameraOpen,
+	cameraOpened,
+	cameraGrabStart,
+	cameraGrabStarted,
+	cameraGrabStop,
+	cameraGrabStopped,
+	cameraClose,
+	cameraClosed,
+	cameraDestroy,
+	cameraDestroyed,
+	cameraDetach,
+	cameraDetached,
+	cameraGrabError,
+	cameraDeviceRemoved
+};
+
+typedef void (*GrabCallback)(const void *object, int width, int height, void * _Nullable frame, int context);
+typedef void (*EventCallback)(const void *object, PylonCameraEvent event, const char * _Nullable errorMessage);
 
 void CPylonInitialize(void) CF_SWIFT_NAME(PylonInitialize());
 void CPylonTerminate(void) CF_SWIFT_NAME(PylonTerminate());
@@ -78,8 +98,11 @@ void CPylonSetBufferAllocator(PylonGrabber * _Nonnull frameGrabber,
                               int bufferCount) CF_SWIFT_NAME(PylonGrabber.SetBufferAllocator(self:frameBuffer:frameBufferSize:bufferCount:));
 void CPylonSetSoftwareTrigger(PylonGrabber *frameGrabber,
                               const void * _Nonnull object,
-                              GrabCallback _Nonnull grabCallback) CF_SWIFT_NAME(PylonGrabber.SetSoftwareTrigger(self:object:callBack:));
+                              GrabCallback _Nonnull grabCallback) CF_SWIFT_NAME(PylonGrabber.setSoftwareTrigger(self:object:callBack:));
 bool CPylonWaitForFrameTriggerReady(PylonGrabber *frameGrabber, int timeout) CF_SWIFT_NAME(PylonGrabber.WaitForFrameTriggerReady(self:timeout:));
+void CPylonSetEventCallback(PylonGrabber * _Nonnull frameGrabber,
+							const void * _Nonnull object,
+							EventCallback _Nullable eventCallback) CF_SWIFT_NAME(PylonGrabber.setEventCallback(self:object:callBack:));
 
 #ifdef __cplusplus
 }

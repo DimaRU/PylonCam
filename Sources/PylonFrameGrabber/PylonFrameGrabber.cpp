@@ -9,6 +9,7 @@
 #include "PylonFrameGrabber.h"
 #include "FrameBufferAllocator.h"
 #include "CPylonImageEventHandler.h"
+#include "CPylonConfigurationEventHandler.h"
 
 using namespace Pylon;
 using namespace GenApi;
@@ -328,7 +329,7 @@ void CPylonSetSoftwareTrigger(PylonGrabber *frameGrabber,
 
     try
     {
-        camera->RegisterConfiguration( new CSoftwareTriggerConfiguration, RegistrationMode_ReplaceAll, Cleanup_Delete );
+        camera->RegisterConfiguration( new CSoftwareTriggerConfiguration, RegistrationMode_Append, Cleanup_Delete );
         auto eventHandler = new CPylonImageEventHandler(object, grabCallback);
         camera->RegisterImageEventHandler( eventHandler, RegistrationMode_Append, Cleanup_Delete );
         camera->Open();
@@ -353,4 +354,14 @@ bool CPylonWaitForFrameTriggerReady(PylonGrabber *frameGrabber, int timeout) {
         if (!camera->IsGrabbing()) return;
         storeString(frameGrabber, e.GetDescription());
     }
+}
+
+void CPylonSetEventCallback(PylonGrabber * _Nonnull frameGrabber,
+							const void * _Nonnull object,
+							EventCallback _Nullable eventCallback) {
+	CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
+	frameGrabber->errorFlag = false;
+
+	auto eventHandler = new CPylonConfigurationEventHandler(object, eventCallback);
+	camera->RegisterConfiguration( eventHandler, RegistrationMode_ReplaceAll, Cleanup_Delete );
 }

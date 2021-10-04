@@ -43,10 +43,18 @@ class MainWindow: UIMainWindow {
         frameGrabber = PylonGrabber()
         super.init()
         connectButtons()
+		frameGrabber.setEventCallback(object: Unmanaged.passUnretained(self).toOpaque()) { object, event, errorPtr in
+			let mySelf = Unmanaged<MainWindow>.fromOpaque(object).takeUnretainedValue()
+			if let errorPtr = errorPtr {
+				mySelf.cameraEvent(event: event, errorMessage: String(cString: errorPtr))
+			} else {
+				mySelf.cameraEvent(event: event, errorMessage: nil)
+			}
+		}
     }
 
     deinit {
-        if frameGrabber.IsPylonDeviceAttached() {
+		if frameGrabber.IsPylonDeviceAttached() && frameGrabber.IsOpen() {
             frameGrabber.setAOI(area: savedAOI)
         }
         frameGrabber.ReleaseCamera()
@@ -171,15 +179,18 @@ class MainWindow: UIMainWindow {
         }
     }
 
+	private func cameraEvent(event: PylonCameraEvent, errorMessage: String?) {
+		print(event, errorMessage ?? "")
+	}
+
     private func grabFrames() {
-        frameGrabber.SetSoftwareTrigger(object: Unmanaged.passUnretained(self).toOpaque())
+        frameGrabber.setSoftwareTrigger(object: Unmanaged.passUnretained(self).toOpaque())
         { object, width, height, frame, context in
             let mySelf = Unmanaged<MainWindow>.fromOpaque(object).takeUnretainedValue()
             mySelf.frameGrabber.ExecuteSoftwareTrigger()
             guard let frame = frame else { return }
             mySelf.drawFrame(frame: frame, width: width, height: height)
         }
-        frameGrabber.WaitForFrameTriggerReady(timeout: 1000)
         frameGrabber.ExecuteSoftwareTrigger()
     }
 
@@ -220,4 +231,27 @@ class MainWindow: UIMainWindow {
             self.imageLabel.setImage(dmxImage)
         }
     }
+}
+
+extension PylonCameraEvent: CustomStringConvertible {
+	public var description: String {
+		switch self {
+		case .cameraAttach: return "cameraAttach"
+		case .cameraAttached: return "cameraAttached"
+		case .cameraOpen: return "cameraOpen"
+		case .cameraOpened: return "cameraOpened"
+		case .cameraGrabStart: return "cameraGrabStart"
+		case .cameraGrabStarted: return "cameraGrabStarted"
+		case .cameraGrabStop: return "cameraGrabStop"
+		case .cameraGrabStopped: return "cameraGrabStopped"
+		case .cameraClose: return "cameraClose"
+		case .cameraClosed: return "cameraClosed"
+		case .cameraDestroy: return "cameraDestroy"
+		case .cameraDestroyed: return "cameraDestroyed"
+		case .cameraDetach: return "cameraDetach"
+		case .cameraDetached: return "cameraDetached"
+		case .cameraGrabError: return "cameraGrabError"
+		case .cameraDeviceRemoved: return "cameraDeviceRemoved"
+		}
+	}
 }
