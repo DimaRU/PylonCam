@@ -54,10 +54,10 @@ class MainWindow: UIMainWindow {
     }
 
     deinit {
-		if frameGrabber.IsPylonDeviceAttached() && frameGrabber.IsOpen() {
+		if frameGrabber.isPylonDeviceAttached() && frameGrabber.isOpen() {
             frameGrabber.setAOI(area: savedAOI)
         }
-        frameGrabber.ReleaseCamera()
+        frameGrabber.releaseCamera()
         PylonTerminate()
     }
 
@@ -86,7 +86,7 @@ class MainWindow: UIMainWindow {
     }
 
     override func closeEvent(event: QCloseEvent) {
-        self.frameGrabber.GrabStop()
+        self.frameGrabber.grabStop()
     }
 
     private func setZoom(zoom: Double) {
@@ -111,13 +111,13 @@ class MainWindow: UIMainWindow {
         imageWidth = Int(newWidth)
         let aoi = Area(offsetX: xPart, offsetY: yPart, width: newWidth, height: newHeight)
         print("Camera capability: \(area.width)x\(area.height)")
-        let model = String(cString: frameGrabber.StringParameter(name: "DeviceModelName"), encoding: .utf8)!
+        let model = String(cString: frameGrabber.stringParameter(name: "DeviceModelName"), encoding: .utf8)!
         statusBar.showMessage(message: " \(model): \(aoi)")
         frameGrabber.setAOI(area: aoi)
         frameGrabber.setAutoAOI(area: aoi)
         sharedMemory = SharedMemory(width: imageWidth, height: imageHeight, bufferCount: Int(bufferCount))
         if let sharedMemory = sharedMemory {
-            frameGrabber.SetBufferAllocator(frameBuffer: sharedMemory.sharedFrameBuffer, frameBufferSize: sharedMemory.bufferSize, bufferCount: bufferCount)
+            frameGrabber.setBufferAllocator(frameBuffer: sharedMemory.sharedFrameBuffer, frameBufferSize: sharedMemory.bufferSize, bufferCount: bufferCount)
         }
         let scrollSize = scrollArea.size
         let labelWidth = scrollSize.width - 5
@@ -126,14 +126,14 @@ class MainWindow: UIMainWindow {
     }
 
     private func tryConnect() -> Bool {
-        if !frameGrabber.IsPylonDeviceAttached() {
-            frameGrabber.AttachDevice()
+        if !frameGrabber.isPylonDeviceAttached() {
+            frameGrabber.attachDevice()
             guard !frameGrabber.errorFlag else {
                 statusBar.showMessage(message: String(cString: frameGrabber.getString, encoding: .utf8)!)
                 return false
             }
         }
-        if !frameGrabber.IsOpen() {
+        if !frameGrabber.isOpen() {
             frameGrabber.cameraStart()
             guard !frameGrabber.errorFlag else {
                 statusBar.showMessage(message: String(cString: frameGrabber.getString, encoding: .utf8)!)
@@ -141,22 +141,22 @@ class MainWindow: UIMainWindow {
             }
         }
         savedAOI = frameGrabber.getAOI()
-        frameGrabber.PrintParams()
+        frameGrabber.printParams()
         setFocusParams()
         setBrigthnessSlider()
         return true
     }
 
     private func setBrigthnessSlider() {
-        brightnessSlider.minimum = Int32(frameGrabber.IntParameter(name: brigtnessParam, type: .min))
-        brightnessSlider.maximum = Int32(frameGrabber.IntParameter(name: brigtnessParam, type: .max))
-        brightnessSlider.singleStep = Int32(frameGrabber.IntParameter(name: brigtnessParam, type: .step))
+        brightnessSlider.minimum = Int32(frameGrabber.intParameter(name: brigtnessParam, type: .min))
+        brightnessSlider.maximum = Int32(frameGrabber.intParameter(name: brigtnessParam, type: .max))
+        brightnessSlider.singleStep = Int32(frameGrabber.intParameter(name: brigtnessParam, type: .step))
         brightnessSlider.pageStep = 1
-        let value = Int32(frameGrabber.IntParameter(name: brigtnessParam, type: .value))
+        let value = Int32(frameGrabber.intParameter(name: brigtnessParam, type: .value))
         brightnessSlider.value = value;
         self.brightnessLabel.text = "Brightness: \(value)"
         brightnessSlider.connectValueChanged { [unowned self] value in
-            self.frameGrabber.SetIntParameter(name: brigtnessParam, value: Int64(value))
+            self.frameGrabber.setIntParameter(name: brigtnessParam, value: Int64(value))
             self.brightnessLabel.text = "Brightness: \(value)"
         }
     }
@@ -170,8 +170,8 @@ class MainWindow: UIMainWindow {
             grabFrames()
         } else {
             startStopButton.text = "Start"
-            self.frameGrabber.GrabStop()
-            if frameGrabber.IsPylonDeviceAttached() {
+            self.frameGrabber.grabStop()
+            if frameGrabber.isPylonDeviceAttached() {
                 frameGrabber.setAOI(area: savedAOI)
             }
             self.frameGrabber.cameraStop()
@@ -187,11 +187,11 @@ class MainWindow: UIMainWindow {
         frameGrabber.setSoftwareTrigger(object: Unmanaged.passUnretained(self).toOpaque())
         { object, width, height, frame, context in
             let mySelf = Unmanaged<MainWindow>.fromOpaque(object).takeUnretainedValue()
-            mySelf.frameGrabber.ExecuteSoftwareTrigger()
+            mySelf.frameGrabber.executeSoftwareTrigger()
             guard let frame = frame else { return }
             mySelf.drawFrame(frame: frame, width: width, height: height)
         }
-        frameGrabber.ExecuteSoftwareTrigger()
+        frameGrabber.executeSoftwareTrigger()
     }
 
     private func getMeasureFunc() -> ((_: Int32, _: Int32, _: UnsafeMutableRawPointer) -> Double) {
