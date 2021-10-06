@@ -26,17 +26,16 @@ FrameBufferAllocator::~FrameBufferAllocator()
 // Warning: This method can be called by different threads.
 void FrameBufferAllocator::AllocateBuffer( size_t bufferSize, void** pCreatedBuffer, intptr_t& bufferContext )
 {
-    CameraSharedMem *header = (CameraSharedMem *)frameBuffer;
+    void **frameBufferAddress = (void **)frameBuffer;
     // Allocate buffer for pixel data.
-    *pCreatedBuffer = header->frameBufferAddress[context];
+    *pCreatedBuffer = frameBufferAddress[context];
     // The context information is never changed by the Instant Camera and can be used
     // by the buffer factory to manage the buffers.
     // The context information can be retrieved from a grab result by calling
     bufferContext = context;
-
     context++;
-    header->frameBufferAddress[context] = (uint8_t *)*pCreatedBuffer + bufferSize;
-    if ( header->frameBufferAddress[context] > (uint8_t *)frameBuffer + frameBufferSize) {
+    frameBufferAddress[context] = (uint8_t *)*pCreatedBuffer + bufferSize;
+    if ( frameBufferAddress[context] > (uint8_t *)frameBuffer + frameBufferSize) {
         *pCreatedBuffer = NULL;
     }
 }

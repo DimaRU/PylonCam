@@ -11,16 +11,11 @@
 #define MaxDMXCodeLen 150   // Max DMX code len 2 byte aligned
 #define MaxDMXCodes 300     // Max DMX codes per image
 
-// Заголовок разделяемой памяти
-typedef struct {
-    uint64_t    width;          // 0
-    uint64_t    height;         // 8
-    void        *frameBufferAddress[];
-} CameraSharedMem;
-
 // Структура запроса
 typedef struct {
     uint64_t    frameId;        // Unique frame ID
+    uint64_t    width;          // 0
+    uint64_t    height;         // 8
     int32_t     bufferNum;      // Buffer number
 } BoxDetectionRequest;
 

@@ -115,7 +115,8 @@ class MainWindow: UIMainWindow {
         statusBar.showMessage(message: " \(model): \(aoi)")
         frameGrabber.setAOI(area: aoi)
         frameGrabber.setAutoAOI(area: aoi)
-        sharedMemory = SharedMemory(width: imageWidth, height: imageHeight, bufferCount: Int(bufferCount))
+        let frameSize = imageWidth * imageHeight
+        sharedMemory = SharedMemory(frameSize: frameSize, bufferCount: Int(bufferCount))
         if let sharedMemory = sharedMemory {
             frameGrabber.setBufferAllocator(frameBuffer: sharedMemory.sharedFrameBuffer, frameBufferSize: sharedMemory.bufferSize, bufferCount: bufferCount)
         }

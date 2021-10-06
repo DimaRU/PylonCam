@@ -11,10 +11,6 @@
 #include <stdint.h>
 #include "SharedData.h"
 
-DMXBox getBoxRecord(const DMXBoxDetectionReply *reply, int index);
-size_t copyDmxString(const DMXCodeDetectionReply *reply, int index, void *dest);
-int getDmxRecordLen(const DMXCodeDetectionReply *reply, int index);
-
 int shmOpen(const char *name, int flags, int mode);
 
 #endif /* CameraSharedMem_h */

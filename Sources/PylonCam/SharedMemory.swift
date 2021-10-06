@@ -15,29 +15,23 @@ import Glibc
 #endif
 import CameraSharedMem
 
-fileprivate let sharedFileName = "/frame_buffer"
+fileprivate let sharedFileName = "/dmx_frame_buffer"
 
 class SharedMemory {
     public let sharedFrameBuffer: UnsafeMutableRawPointer!
-    public let headerSize: Int
     public let bufferSize: Int
-    public let bufferCount: Int
 
-    init(width: Int, height: Int, bufferCount: Int) {
-        self.bufferCount = bufferCount
-        headerSize = (MemoryLayout<CameraSharedMem>.size + MemoryLayout<UnsafeRawPointer>.size * bufferCount + 0xff) & ~0xff
-        let size = width * height * bufferCount + headerSize
+    init(frameSize: Int, bufferCount: Int) {
+        let headerSize = (MemoryLayout<UnsafeRawPointer>.size * bufferCount + 0xff) & ~0xff
+        let size = frameSize * bufferCount + headerSize
         bufferSize = (size + 0xfff) & ~0xfff
         sharedFrameBuffer = SharedMemory.makeShareFrameBuffer(size: bufferSize)
-        let cameraSharedMemPtr = sharedFrameBuffer.bindMemory(to: CameraSharedMem.self, capacity: 1)
-        cameraSharedMemPtr.pointee.width = UInt64(width)
-        cameraSharedMemPtr.pointee.height = UInt64(height)
-        let frameBufferPtr = (sharedFrameBuffer + MemoryLayout<CameraSharedMem>.size).bindMemory(to: UnsafeMutableRawPointer.self, capacity: 0)
+        let frameBufferPtr = sharedFrameBuffer.bindMemory(to: UnsafeMutableRawPointer.self, capacity: 1)
         frameBufferPtr[0] = sharedFrameBuffer + headerSize
     }
 
     deinit {
-        destroyShareFrameBuffer(size: bufferSize)
+        destroySharedFrameBuffer(size: bufferSize)
     }
 
     static func makeShareFrameBuffer(size: Int) -> UnsafeMutableRawPointer {
@@ -65,7 +59,7 @@ class SharedMemory {
         return buffer
     }
 
-    func destroyShareFrameBuffer(size: Int) {
+    func destroySharedFrameBuffer(size: Int) {
         munmap(sharedFrameBuffer, size)
         shm_unlink(sharedFileName)
     }
