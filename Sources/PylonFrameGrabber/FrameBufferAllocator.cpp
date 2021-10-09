@@ -7,7 +7,6 @@
 
 #include <pylon/PylonIncludes.h>
 #include "FrameBufferAllocator.h"
-#include "SharedData.h"
 
 using namespace Pylon;
 

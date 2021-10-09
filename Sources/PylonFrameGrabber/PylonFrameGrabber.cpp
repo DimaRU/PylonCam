@@ -157,6 +157,31 @@ const char *CPylonStringParameter(PylonGrabber *frameGrabber, const char *name)
     return frameGrabber->stringBuffer;
 }
 
+void CPylonSetStringParameter(PylonGrabber *frameGrabber, const char *name, const char *value)
+{
+    CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
+    frameGrabber->errorFlag = false;
+    INodeMap& nodemap = camera->GetNodeMap();
+    CStringParameter(nodemap, name).SetValue(value);
+}
+
+const char *CPylonEnumParameter(PylonGrabber *frameGrabber, const char *name)
+{
+    CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
+    frameGrabber->errorFlag = false;
+    INodeMap& nodemap = camera->GetNodeMap();
+    strcpy(frameGrabber->stringBuffer, CEnumParameter( nodemap, name ).GetValue().c_str());
+    return frameGrabber->stringBuffer;
+}
+
+void CPylonSetEnumParameter(PylonGrabber *frameGrabber, const char *name, const char *value)
+{
+    CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
+    frameGrabber->errorFlag = false;
+    INodeMap& nodemap = camera->GetNodeMap();
+    CEnumParameter(nodemap, name).SetValue(value);
+}
+
 void CPylonPrintParams(PylonGrabber *frameGrabber) {
     CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
     frameGrabber->errorFlag = false;
