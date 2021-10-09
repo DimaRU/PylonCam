@@ -351,7 +351,7 @@ bool CPylonWaitForFrameTriggerReady(PylonGrabber *frameGrabber, int timeout) {
     }
     catch (const GenericException& e)
     {
-        if (!camera->IsGrabbing()) return;
+        if (!camera->IsGrabbing()) return false;
         storeString(frameGrabber, e.GetDescription());
     }
 }
