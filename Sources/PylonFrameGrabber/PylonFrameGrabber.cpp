@@ -161,8 +161,15 @@ void CPylonSetStringParameter(PylonGrabber *frameGrabber, const char *name, cons
 {
     CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
     frameGrabber->errorFlag = false;
-    INodeMap& nodemap = camera->GetNodeMap();
-    CStringParameter(nodemap, name).SetValue(value);
+    try
+    {
+        INodeMap& nodemap = camera->GetNodeMap();
+        CStringParameter(nodemap, name).SetValue(value);
+    }
+    catch (const GenericException& e)
+    {
+        storeString(frameGrabber, e.GetDescription());
+    }
 }
 
 const char *CPylonEnumParameter(PylonGrabber *frameGrabber, const char *name)
@@ -178,8 +185,38 @@ void CPylonSetEnumParameter(PylonGrabber *frameGrabber, const char *name, const 
 {
     CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
     frameGrabber->errorFlag = false;
+    try
+    {
+        INodeMap& nodemap = camera->GetNodeMap();
+        CEnumParameter(nodemap, name).SetValue(value);
+    }
+    catch (const GenericException& e)
+    {
+        storeString(frameGrabber, e.GetDescription());
+    }
+}
+
+bool CPylonBoolParameter(PylonGrabber *frameGrabber, const char *name)
+{
+    CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
+    frameGrabber->errorFlag = false;
     INodeMap& nodemap = camera->GetNodeMap();
-    CEnumParameter(nodemap, name).SetValue(value);
+    return CBooleanParameter( nodemap, name).GetValue();
+}
+
+void CPylonSetBoolParameter(PylonGrabber *frameGrabber, const char *name, bool value)
+{
+    CInstantCamera *camera = (CInstantCamera *)frameGrabber->camera;
+    frameGrabber->errorFlag = false;
+    try
+    {
+        INodeMap& nodemap = camera->GetNodeMap();
+        CBooleanParameter(nodemap, name).SetValue(value);
+    }
+    catch (const GenericException& e)
+    {
+        storeString(frameGrabber, e.GetDescription());
+    }
 }
 
 void CPylonPrintParams(PylonGrabber *frameGrabber) {

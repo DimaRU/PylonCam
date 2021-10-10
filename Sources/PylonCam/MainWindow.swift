@@ -37,6 +37,7 @@ class MainWindow: UIMainWindow {
     private let measureQueue = DispatchQueue(label: "measureFocus.Queue", qos: .userInteractive)
     private var sharedMemory: SharedMemory?
     private var savedAOI: Area = Area()
+    public var emulatePath: String?
 
     init() {
         PylonInitialize()
@@ -141,10 +142,20 @@ class MainWindow: UIMainWindow {
                 return false
             }
         }
+        if let emulatePath = emulatePath {
+            frameGrabber.setEnumParameter(name: "TestImageSelector", value: "Off")
+            frameGrabber.setEnumParameter(name: "ImageFileMode", value: "On")
+            frameGrabber.setStringParameter(name: "ImageFilename", value: emulatePath)
+            frameGrabber.setBoolParameter(name: "AcquisitionFrameRateEnable", value: true)
+            frameGrabber.setFloatParameter(name: "AcquisitionFrameRateAbs", value: 1)
+        }
         savedAOI = frameGrabber.getAOI()
         frameGrabber.printParams()
         setFocusParams()
-        setBrigthnessSlider()
+        let cameraModel = String(cString: frameGrabber.stringParameter(name: "DeviceModelName"))
+        if cameraModel != "CamEmu" {
+            setBrigthnessSlider()
+        }
         return true
     }
 

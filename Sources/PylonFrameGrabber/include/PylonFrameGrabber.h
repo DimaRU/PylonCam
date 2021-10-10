@@ -82,6 +82,12 @@ void CPylonSetIntParameter(PylonGrabber *frameGrabber, const char *name, int64_t
 double CPylonFloatParameter(PylonGrabber * _Nonnull frameGrabber, const char * _Nonnull name, GetParameterType type) CF_SWIFT_NAME(PylonGrabber.floatParameter(self:name:type:));
 void CPylonSetFloatParameter(PylonGrabber * _Nonnull frameGrabber, const char * _Nonnull name, double value) CF_SWIFT_NAME(PylonGrabber.setFloatParameter(self:name:value:));
 const char * _Nonnull CPylonStringParameter(PylonGrabber * _Nonnull frameGrabber, const char * _Nonnull name) CF_SWIFT_NAME(PylonGrabber.stringParameter(self:name:));
+void CPylonSetStringParameter(PylonGrabber * _Nonnull frameGrabber, const char * _Nonnull name, const char * _Nonnull value) CF_SWIFT_NAME(PylonGrabber.setStringParameter(self:name:value:));
+const char * _Nonnull CPylonEnumParameter(PylonGrabber * _Nonnull frameGrabber, const char * _Nonnull name) CF_SWIFT_NAME(PylonGrabber.enumParameter(self:name:));
+void CPylonSetEnumParameter(PylonGrabber * _Nonnull frameGrabber, const char * _Nonnull name, const char * _Nonnull value) CF_SWIFT_NAME(PylonGrabber.setEnumParameter(self:name:value:));
+bool CPylonBoolParameter(PylonGrabber * _Nonnull frameGrabber, const char * _Nonnull name) CF_SWIFT_NAME(PylonGrabber.boolParameter(self:name:));
+void CPylonSetBoolParameter(PylonGrabber * _Nonnull frameGrabber, const char * _Nonnull name, bool value) CF_SWIFT_NAME(PylonGrabber.setBoolParameter(self:name:value:));
+
 Area CPylonGetAOI(PylonGrabber * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.getAOI(self:));
 Area CPylonGetAutoAOI(PylonGrabber * _Nonnull frameGrabber) CF_SWIFT_NAME(PylonGrabber.getAutoAOI(self:));
 void CPylonSetAOI(PylonGrabber * _Nonnull frameGrabber, Area area) CF_SWIFT_NAME(PylonGrabber.setAOI(self:area:));

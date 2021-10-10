@@ -18,6 +18,13 @@ func main() -> Int32 {
     let application = QApplication()
     application.setStyle("Fusion")
     let mainWindow = MainWindow()
+    if
+        let emulate = (CommandLine.arguments.first { $0.hasPrefix("-emulate=") }) {
+        setenv("PYLON_CAMEMU", "1", 1)
+        let emulatePath = emulate.dropFirst("-emulate=".count)
+        mainWindow.emulatePath = String(emulatePath)
+    }
+
     mainWindow.show()
     return application.exec()
 }
