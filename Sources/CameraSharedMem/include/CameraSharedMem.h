@@ -11,6 +11,6 @@
 #include <stdint.h>
 #include "SharedData.h"
 
-int shmOpen(const char *name, int flags, int mode);
+int shmOpen(const char *name, int flags, unsigned short int mode);
 
 #endif /* CameraSharedMem_h */

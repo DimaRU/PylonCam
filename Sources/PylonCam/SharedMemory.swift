@@ -31,12 +31,12 @@ class SharedMemory {
     }
 
     deinit {
-        destroySharedFrameBuffer(size: bufferSize)
+        destroyShareFrameBuffer(size: bufferSize)
     }
 
     static func makeShareFrameBuffer(size: Int) -> UnsafeMutableRawPointer {
         shm_unlink(sharedFileName)
-        let sharedFile = shmOpen(sharedFileName, O_RDWR|O_CREAT, 0)
+        let sharedFile = shmOpen(sharedFileName, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR)
         guard
             sharedFile != -1 else {
                 perror(nil)
@@ -59,7 +59,7 @@ class SharedMemory {
         return buffer
     }
 
-    func destroySharedFrameBuffer(size: Int) {
+    func destroyShareFrameBuffer(size: Int) {
         munmap(sharedFrameBuffer, size)
         shm_unlink(sharedFileName)
     }
