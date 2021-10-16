@@ -2,11 +2,20 @@
   "object": {
     "pins": [
       {
+        "package": "PylonFrameGrabber",
+        "repositoryURL": "https://git.dev-og.com/d.borovikov/PylonFrameGrabber.git",
+        "state": {
+          "branch": "master",
+          "revision": "31924d18756b0b588a0a22758a7bbeca369de135",
+          "version": null
+        }
+      },
+      {
         "package": "Qlift",
         "repositoryURL": "https://github.com/DimaRU/qlift",
         "state": {
           "branch": "master",
-          "revision": "8429aea92259a8f7a1c1c5a61ccef50fc3f43485",
+          "revision": "425475bc4540711a743010397992bd870a0dbd6a",
           "version": null
         }
       },

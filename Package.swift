@@ -8,7 +8,8 @@ let package = Package(
     dependencies: [
         .package(name: "Qlift", url: "https://github.com/DimaRU/qlift", .branch("master")),
         .package(url: "https://github.com/ianpartridge/swift-log-syslog", from: "1.0.0"),
-        .package(url: "https://github.com/swift-server/swift-backtrace", from: "1.0.0")
+        .package(url: "https://github.com/swift-server/swift-backtrace", from: "1.0.0"),
+        .package(url: "https://git.dev-og.com/d.borovikov/PylonFrameGrabber.git", .branch("master")),
     ],
     targets: [
         .target(
@@ -36,9 +37,7 @@ let package = Package(
             ]
         ),
         .target(name: "CameraSharedMem", cSettings: [.headerSearchPath("../../include")]),
-        .target(name: "PylonFrameGrabber", dependencies: ["CPylon"], cSettings: [.headerSearchPath("../../include")]),
         .target(name: "FocusMeasure", dependencies: ["COpencv4"]),
-        .systemLibrary(name: "CPylon", pkgConfig: "pylon"),
         .systemLibrary(name: "COpencv4", pkgConfig: "opencv4"),
     ],
     cLanguageStandard: .c99,

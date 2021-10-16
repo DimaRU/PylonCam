@@ -26,8 +26,8 @@ class SharedMemory {
         let size = frameSize * bufferCount + headerSize
         bufferSize = (size + 0xfff) & ~0xfff
         sharedFrameBuffer = SharedMemory.makeShareFrameBuffer(size: bufferSize)
-        let frameBufferPtr = sharedFrameBuffer.bindMemory(to: UnsafeMutableRawPointer.self, capacity: 1)
-        frameBufferPtr[0] = sharedFrameBuffer + headerSize
+        let frameBufferOffset = sharedFrameBuffer.bindMemory(to: Int.self, capacity: 1)
+        frameBufferOffset[0] = headerSize
     }
 
     deinit {

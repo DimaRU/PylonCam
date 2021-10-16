@@ -1,3 +1,0 @@
-module CPylon [system] {
-    export *
-}
