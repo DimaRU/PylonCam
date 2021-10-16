@@ -36,7 +36,11 @@ class SharedMemory {
 
     static func makeShareFrameBuffer(size: Int) -> UnsafeMutableRawPointer {
         shm_unlink(sharedFileName)
+        #if os(Linux)
+        let sharedFile = shm_open(sharedFileName, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR)
+        #else
         let sharedFile = shmOpen(sharedFileName, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR)
+        #endif
         guard
             sharedFile != -1 else {
                 perror(nil)
