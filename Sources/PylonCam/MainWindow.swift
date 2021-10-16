@@ -195,11 +195,21 @@ class MainWindow: UIMainWindow {
 		print(event, errorMessage ?? "")
 	}
 
+    private func triggerFrameAcquisition() {
+        frameGrabberQueue.async {
+            if self.frameGrabber.waitForFrameTriggerReady(timeout: 5000) {
+                self.frameGrabber.executeSoftwareTrigger()
+            } else {
+                print("Error while wait frame acquisition")
+            }
+        }
+    }
+
     private func grabFrames() {
         frameGrabber.setSoftwareTrigger(object: Unmanaged.passUnretained(self).toOpaque())
         { object, width, height, frame, context in
             let mySelf = Unmanaged<MainWindow>.fromOpaque(object).takeUnretainedValue()
-            mySelf.frameGrabber.executeSoftwareTrigger()
+            mySelf.triggerFrameAcquisition()
             guard let frame = frame else { return }
             mySelf.drawFrame(frame: frame, width: width, height: height)
         }
@@ -218,7 +228,8 @@ class MainWindow: UIMainWindow {
     }
 
     private func drawFrame(frame: UnsafeMutableRawPointer, width: Int32, height: Int32) {
-        measureQueue.async {
+        measureQueue.async { [weak self] in
+            guard let self = self else { return }
             let measureFunc = self.getMeasureFunc()
             let measure = measureFunc(width, height, frame)
             dispatchQt {
