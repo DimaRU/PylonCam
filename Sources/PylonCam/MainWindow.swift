@@ -44,14 +44,21 @@ class MainWindow: UIMainWindow {
         frameGrabber = PylonGrabber()
         super.init()
         connectButtons()
-		frameGrabber.setEventCallback(object: Unmanaged.passUnretained(self).toOpaque()) { object, event, errorPtr in
-			let mySelf = Unmanaged<MainWindow>.fromOpaque(object).takeUnretainedValue()
-			if let errorPtr = errorPtr {
-				mySelf.cameraEvent(event: event, errorMessage: String(cString: errorPtr))
-			} else {
-				mySelf.cameraEvent(event: event, errorMessage: nil)
-			}
-		}
+
+        frameGrabber.setSoftwareTrigger(object: Unmanaged.passUnretained(self).toOpaque())
+        { object, width, height, frame, context in
+            let mySelf = Unmanaged<MainWindow>.fromOpaque(object).takeUnretainedValue()
+            mySelf.triggerFrameAcquisition()
+            guard let frame = frame else { return }
+            mySelf.drawFrame(frame: frame, width: width, height: height)
+        } eventCallBack: { object, event, errorPtr in
+            let mySelf = Unmanaged<MainWindow>.fromOpaque(object).takeUnretainedValue()
+            if let errorPtr = errorPtr {
+                mySelf.cameraEvent(event: event, errorMessage: String(cString: errorPtr))
+            } else {
+                mySelf.cameraEvent(event: event, errorMessage: nil)
+            }
+        }
     }
 
     deinit {
@@ -104,20 +111,21 @@ class MainWindow: UIMainWindow {
 
     private func setFocusParams() {
         let area = frameGrabber.getMaxArea()
-        let xPart = (area.width / 3) & ~0xf
-        let yPart = (area.height / 3) & ~0xf
-        let newWidth = (area.width - xPart * 2) & ~0xf
-        let newHeight = (area.height - yPart * 2) & ~0xf
-        imageHeight = Int(newHeight)
-        imageWidth = Int(newWidth)
-        let aoi = Area(offsetX: xPart, offsetY: yPart, width: newWidth, height: newHeight)
+        //        let xPart = (area.width / 3) & ~0xf
+        //        let yPart = (area.height / 3) & ~0xf
+        //        let newWidth = (area.width - xPart * 2) & ~0xf
+        //        let newHeight = (area.height - yPart * 2) & ~0xf
+        //        let autoAOI = Area(offsetX: xPart, offsetY: yPart, width: newWidth, height: newHeight)
+        //        frameGrabber.setAutoAOI(area: autoAOI)
         print("Camera capability: \(area.width)x\(area.height)")
+        let aoi = frameGrabber.getAOI()
+        imageHeight = Int(aoi.height)
+        imageWidth = Int(aoi.width)
         let model = String(cString: frameGrabber.stringParameter(name: "DeviceModelName"), encoding: .utf8)!
         statusBar.showMessage(message: " \(model): \(aoi)")
-        frameGrabber.setAOI(area: aoi)
-        frameGrabber.setAutoAOI(area: aoi)
+
         let frameSize = imageWidth * imageHeight
-        sharedMemory = SharedMemory(frameSize: frameSize, bufferCount: Int(bufferCount))
+        sharedMemory = SharedMemory(frameSize: frameSize, bufferCount: Int(bufferCount), sharedFileName: "/dmx_frame_buffer")
         if let sharedMemory = sharedMemory {
             frameGrabber.setBufferAllocator(frameBuffer: sharedMemory.sharedFrameBuffer, frameBufferSize: sharedMemory.bufferSize, bufferCount: bufferCount)
         }
@@ -197,7 +205,7 @@ class MainWindow: UIMainWindow {
 
     private func triggerFrameAcquisition() {
         frameGrabberQueue.async {
-            if self.frameGrabber.waitForFrameTriggerReady(timeout: 5000) {
+            if self.frameGrabber.waitForFrameTriggerReady(timeout: 1000) {
                 self.frameGrabber.executeSoftwareTrigger()
             } else {
                 print("Error while wait frame acquisition")
@@ -206,14 +214,8 @@ class MainWindow: UIMainWindow {
     }
 
     private func grabFrames() {
-        frameGrabber.setSoftwareTrigger(object: Unmanaged.passUnretained(self).toOpaque())
-        { object, width, height, frame, context in
-            let mySelf = Unmanaged<MainWindow>.fromOpaque(object).takeUnretainedValue()
-            mySelf.triggerFrameAcquisition()
-            guard let frame = frame else { return }
-            mySelf.drawFrame(frame: frame, width: width, height: height)
-        }
-        frameGrabber.executeSoftwareTrigger()
+        frameGrabber.startSoftwareTriggeredGrab()
+        triggerFrameAcquisition()
     }
 
     private func getMeasureFunc() -> ((_: Int32, _: Int32, _: UnsafeMutableRawPointer) -> Double) {

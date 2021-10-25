@@ -1,13 +1,12 @@
 //
-//  CameraSharedMem.c
-//  SocketClient
+//  SharedMemory.c
+//  
 //
-//  Created by Dmitriy Borovikov on 21.09.2021.
+//  Created by Dmitriy Borovikov on 03.10.2021.
 //
 
-#include <string.h>
+#include "DMXWrapper.h"
 #include <sys/mman.h>
-#include "CameraSharedMem.h"
 
 int shmOpen(const char *name, int flags, unsigned short int mode) {
     return shm_open(name, flags, mode);

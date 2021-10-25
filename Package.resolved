@@ -2,11 +2,20 @@
   "object": {
     "pins": [
       {
+        "package": "Socket",
+        "repositoryURL": "https://github.com/DimaRU/BlueSocket.git",
+        "state": {
+          "branch": "master",
+          "revision": "321b07593c8c4096ccf5540ae3bcff3d192e1f90",
+          "version": null
+        }
+      },
+      {
         "package": "PylonFrameGrabber",
         "repositoryURL": "https://git.dev-og.com/d.borovikov/PylonFrameGrabber.git",
         "state": {
           "branch": "master",
-          "revision": "31924d18756b0b588a0a22758a7bbeca369de135",
+          "revision": "d80b38c7e3bb47e1deca6102c15a4ce7111cb56a",
           "version": null
         }
       },
@@ -17,6 +26,15 @@
           "branch": "master",
           "revision": "425475bc4540711a743010397992bd870a0dbd6a",
           "version": null
+        }
+      },
+      {
+        "package": "swift-argument-parser",
+        "repositoryURL": "https://github.com/apple/swift-argument-parser",
+        "state": {
+          "branch": null,
+          "revision": "6b2aa2748a7881eebb9f84fb10c01293e15b52ca",
+          "version": "0.5.0"
         }
       },
       {

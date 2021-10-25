@@ -10,6 +10,7 @@ let package = Package(
         .package(url: "https://github.com/ianpartridge/swift-log-syslog", from: "1.0.0"),
         .package(url: "https://github.com/swift-server/swift-backtrace", from: "1.0.0"),
         .package(url: "https://git.dev-og.com/d.borovikov/PylonFrameGrabber.git", .branch("master")),
+        .package(name: "Socket", url: "https://github.com/DimaRU/BlueSocket.git", .branch("master")),
     ],
     targets: [
         .target(
@@ -18,11 +19,10 @@ let package = Package(
                 "Qlift",
                 "PylonFrameGrabber",
                 "FocusMeasure",
-                "CameraSharedMem",
+                "DMXConnect",
                 .product(name: "Backtrace", package: "swift-backtrace", condition: .when(platforms: [.linux])),
                 .product(name: "LoggingSyslog", package: "swift-log-syslog")
             ],
-            cSettings: [.headerSearchPath("../../include")],
             linkerSettings: [
                 .linkedLibrary("rt", .when(platforms: [.linux])),
                 .linkedFramework("QtWidgets", .when(platforms: [.macOS])),
@@ -36,7 +36,8 @@ let package = Package(
                 ], .when(platforms: [.linux])),
             ]
         ),
-        .target(name: "CameraSharedMem", cSettings: [.headerSearchPath("../../include")]),
+        .target(name: "DMXWrapper"),
+        .target(name: "DMXConnect", dependencies: ["DMXWrapper", "Socket"]),
         .target(name: "FocusMeasure", dependencies: ["COpencv4"]),
         .systemLibrary(name: "COpencv4", pkgConfig: "opencv4"),
     ],

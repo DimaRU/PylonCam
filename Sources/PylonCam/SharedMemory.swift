@@ -6,65 +6,48 @@
 //
 
 import Foundation
-#if canImport(Darwin)
-import Darwin
-#elseif canImport(Glibc)
-import Glibc
-#else
-#error("Unsupported platform")
-#endif
-import CameraSharedMem
+import DMXWrapper
 
-fileprivate let sharedFileName = "/dmx_frame_buffer"
-
-class SharedMemory {
-    public let sharedFrameBuffer: UnsafeMutableRawPointer!
+final class SharedMemory {
+    public let sharedFrameBuffer: UnsafeMutableRawPointer
     public let bufferSize: Int
 
-    init(frameSize: Int, bufferCount: Int) {
-        let headerSize = (MemoryLayout<UnsafeRawPointer>.size * bufferCount + 0xff) & ~0xff
-        let size = frameSize * bufferCount + headerSize
-        bufferSize = (size + 0xfff) & ~0xfff
-        sharedFrameBuffer = SharedMemory.makeShareFrameBuffer(size: bufferSize)
-        let frameBufferOffset = sharedFrameBuffer.bindMemory(to: Int.self, capacity: 1)
-        frameBufferOffset[0] = headerSize
+    init(frameSize: Int, bufferCount: Int, sharedFileName: String) {
+        bufferSize = frameSize * bufferCount
+        sharedFrameBuffer = SharedMemory.makeSharedFrameBuffer(size: bufferSize, sharedFileName: sharedFileName)
     }
 
     deinit {
-        destroyShareFrameBuffer(size: bufferSize)
+        munmap(sharedFrameBuffer, bufferSize)
     }
 
-    static func makeShareFrameBuffer(size: Int) -> UnsafeMutableRawPointer {
-        shm_unlink(sharedFileName)
-        #if os(Linux)
-        let sharedFile = shm_open(sharedFileName, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR)
-        #else
-        let sharedFile = shmOpen(sharedFileName, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR)
-        #endif
+    static func makeSharedFrameBuffer(size: Int, sharedFileName: String) -> UnsafeMutableRawPointer {
+        let sharedFile = shmOpen(sharedFileName, O_RDWR|O_CREAT, UInt16(S_IRUSR|S_IWUSR))
         guard
             sharedFile != -1 else {
                 perror(nil)
                 fatalError("Can't open shared frame_buffer file")
+            }
+
+        var statBuf: stat = stat()
+        let _ = fstat(sharedFile, &statBuf)
+        let fileSize = Int(statBuf.st_size)
+        print(fileSize)
+        if size > fileSize {
+#if os(Linux)
+            ftruncate(sharedFile, size)
+#else
+            ftruncate(sharedFile, Int64(size))
+#endif
         }
 
-        #if os(Linux)
-        ftruncate(sharedFile, size)
-        #else
-        ftruncate(sharedFile, Int64(size))
-        #endif
         guard
             let buffer = mmap(nil, size, PROT_READ|PROT_WRITE, MAP_SHARED, sharedFile, 0),
             buffer != UnsafeMutableRawPointer(bitPattern: -1) else {
-                shm_unlink(sharedFileName)
                 perror(nil)
                 fatalError("Can't map frame_buffer")
-        }
+            }
         close(sharedFile)
         return buffer
-    }
-
-    func destroyShareFrameBuffer(size: Int) {
-        munmap(sharedFrameBuffer, size)
-        shm_unlink(sharedFileName)
     }
 }
